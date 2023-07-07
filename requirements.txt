@@ -1,0 +1,16 @@
+cycler
+joblib
+jsons
+kiwisolver
+matplotlib
+numpy
+pandas
+pprofile
+pyparsing
+python-dateutil
+pytz
+scipy
+seaborn
+six
+tqdm
+psutil
