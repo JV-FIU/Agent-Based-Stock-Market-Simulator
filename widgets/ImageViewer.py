@@ -1,3 +1,7 @@
+#Image viewing Widget for Agent-based Stock Market Simulator
+#Created by: Jorge Valdes-Santiago
+#Date created: June 30, 2023
+
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QWidget,  QLabel, QHBoxLayout, QVBoxLayout, QPushButton 
 from PySide6 import QtCore
