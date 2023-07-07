@@ -89,7 +89,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
 
 
 
-This software uses PyQt6 library for Python:
+This software uses the PyQt6 library for Python:
 
 
 PyQt6 - Comprehensive Python Bindings for Qt v6
