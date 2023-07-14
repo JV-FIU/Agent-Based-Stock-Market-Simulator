@@ -27,7 +27,7 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
     def __init__(self):
         super().__init__()
         self.ui = loader.load("widgets/UI/RMSC03UI.ui", None)
-        self.ui.setWindowTitle("Agent-Based Stock Market Simulator RMSC03 UI Widget Experiment - Jorge V.")
+        self.ui.setWindowTitle("Reference Market Simulation")
         self.ui.pushButton.clicked.connect(self.simulate)
         self.ui.graphResults.clicked.connect(self.graphLiquidity) #FIXME: Uncomment after recording video
         global isGraphAvailable
