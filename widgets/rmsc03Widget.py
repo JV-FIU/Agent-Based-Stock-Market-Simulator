@@ -10,6 +10,7 @@ import argparse
 import sys
 import importlib
 import time
+import json
 import os
 from widgets.ImageViewer import ImageWidget as ImgWidget
 
@@ -20,6 +21,8 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
     epoch_time = 0
     isGraphAvailable = False
     stockSym = "MSFT" #Default stock symbol for now
+    alreadyRun = False
+    alreadyGraphed = False
 
     def __init__(self):
         super().__init__()
@@ -30,6 +33,13 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
         global isGraphAvailable
         isGraphAvailable = False
 
+        global alreadyRun
+        alreadyRun = False
+
+        global alreadyGraphed
+        alreadyGraphed = False
+
+
     def show(self):#Display window
         self.ui.show() 
 
@@ -38,6 +48,7 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
         global isGraphAvailable
         global epoch_time
         global stockSym
+        global alreadyRun
 
         epoch_time = int(time.time())
         stockSym = self.ui.stockSymbol.text()
@@ -86,13 +97,30 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
             print("Config file: ", config_file)  
             #for i in sys.argv:
             #    print("Argument:  ", i)
-            print("Running Simulation... This may take a while")
-            config = importlib.import_module('config.{}'.format(config_file), package=None) #FIXME: Uncomment after debugging graph
+            print("Running Simulation... This might take a while")
+            #config = importlib.import_module('config.{}'.format(config_file), package=None)
+            
+            if alreadyRun == False:
+                importlib.import_module('config.{}'.format(config_file), package=None) #FIXME: The program is ignoring this line for some reason when the sim is run more than once
+                alreadyRun = True
+            else:
+                importlib.reload(importlib.import_module('config.{}'.format(config_file), package=None))
+                
             
             #Clear arguments after running simulation
             TemporaryStorage = sys.argv[0]
             sys.argv.clear()
             sys.argv.append(TemporaryStorage)
+
+            #Open json file used for plotting and edit variables
+            with open('util/plotting/configs/plot_configuration.json', 'r+') as jsonFile:
+                timeData = json.load(jsonFile)                              #Load json file
+                timeData['xmin'] = startTime.time().toString("hh:mm:ss")    #Set start time
+                timeData['xmax'] = endTime.time().toString("hh:mm:ss")      #Set simulation end time
+                jsonFile.seek(0)                                            #Go to top of file
+                json.dump(timeData, jsonFile, indent=4)                     #Insert edits into file
+                jsonFile.truncate()                                         #Delete whatever characters are left
+                jsonFile.close()      
             
             isGraphAvailable = True
             print("Simulation complete")
@@ -102,6 +130,7 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
     def graphLiquidity(self):
         global epoch_time
         global stockSym
+        global alreadyGraphed
 
         if (isGraphAvailable): #Check if there's a graph
             print("New Epoch time is: ", epoch_time)
@@ -120,17 +149,26 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
             sys.argv.append("-o")
             sys.argv.append(str(epoch_time) + "_LiquidityGraph.png")         
             sys.argv.append("-c")
-            sys.argv.append("configs/plot_09.30_11.30.json")    #Temporary, a json configuration file creator will be added
+            sys.argv.append("configs/plot_configuration.json")    #Temporary, a json configuration file creator will be added
                             
             args, config_args = parser.parse_known_args() 
             #config_file = args.config
 
-            config = importlib.import_module('util.plotting.{}'.format('liquidity_telemetry'), package=None)
+
+            if alreadyGraphed == False:
+                importlib.import_module('util.plotting.{}'.format('liquidity_telemetry'), package=None)
+                alreadyGraphed = True
+            else:
+                importlib.reload(importlib.import_module('util.plotting.{}'.format('liquidity_telemetry'), package=None))
+            
             image = ImgWidget(str(epoch_time) + "_LiquidityGraph.png")
             image.show()
-            sys.argv[0] = TemporaryStorage
-            #os.chdir('../../')
-            print("Current Directory: ", os.getcwd())
+            
+            #Clean up
+            sys.argv.clear()
+            sys.argv.append(TemporaryStorage)
+            os.chdir('../../')
+            #print("Current Directory: ", os.getcwd())
             print("Done")
         else:
             print("Run simulation first") 
