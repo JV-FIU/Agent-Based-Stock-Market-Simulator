@@ -14,3 +14,6 @@ seaborn
 six
 tqdm
 psutil
+pyside6
+pyqt5
+pyqt6
