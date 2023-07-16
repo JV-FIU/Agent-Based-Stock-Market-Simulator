@@ -64,6 +64,9 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
             print("Start Time:      ", startTime.time().toString("hh:mm:ss"))
             print("End Time:        ", endTime.time().toString("hh:mm:ss"))
             #os.chdir('../')
+            #FIXME: Considering adding the instructions that will take seed data from UI
+            seed = int(pd.Timestamp.now().timestamp() * 1000000) % (2 ** 32 - 1) #Generate random seed (Temporary) 
+
 
             #ABIDES functionality
             parser = argparse.ArgumentParser(description='Simulation configuration.')
@@ -80,7 +83,7 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
             sys.argv.append("-d")
             sys.argv.append(selectedDate.date().toString('yyyyMMdd'))
             sys.argv.append("-s")
-            sys.argv.append("12")
+            sys.argv.append(str(seed))
             sys.argv.append("-l")
             sys.argv.append(str(epoch_time))   
             sys.argv.append("--start-time")
@@ -91,7 +94,7 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
             args, config_args = parser.parse_known_args() 
             config_file = args.config
             #Default start time is 9:30:00
-            #Default end time is  11:30:00
+            #Default end time is 11:30:00
 
             # First parameter supplied is config file.
             print("Config file: ", config_file)  
