@@ -13,6 +13,7 @@ import time
 import json
 import os
 from widgets.ImageViewer import ImageWidget as ImgWidget
+import pandas as pd
 
 loader = QUiLoader()
 
