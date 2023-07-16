@@ -1,6 +1,7 @@
 #RMSC03 Widget for Agent-based Stock Market Simulator
 #Created by: Jorge Valdes-Santiago
-#Date created: June 26, 2023
+#Date created:  June 26, 2023
+#Updated:       July 16, 2023
 
 #IMPORTANT NOTE: All code related to finding content in directories are using the location of MainX.py as reference
 
@@ -13,6 +14,7 @@ import time
 import json
 import os
 from widgets.ImageViewer import ImageWidget as ImgWidget
+
 import pandas as pd
 
 loader = QUiLoader()
@@ -20,20 +22,31 @@ loader = QUiLoader()
 class RMSC03(QtCore.QObject): #An object wrapping around the ui
     #Global variables
     epoch_time = 0
-    isGraphAvailable = False
-    stockSym = "MSFT" #Default stock symbol for now
+    stockSym = "NDAQ" #Default stock symbol for now
     alreadyRun = False
     alreadyGraphed = False
 
     def __init__(self):
         super().__init__()
+        #Load window
         self.ui = loader.load("widgets/UI/RMSC03UI.ui", None)
-        self.ui.setWindowTitle("Reference Market Simulation")
-        self.ui.pushButton.clicked.connect(self.simulate)
-        self.ui.graphResults.clicked.connect(self.graphLiquidity) #FIXME: Uncomment after recording video
-        global isGraphAvailable
-        isGraphAvailable = False
+        self.ui.setWindowTitle("Agent-Based Stock Market Simulator RMSC03 UI Widget Experiment - Jorge V.")
 
+        #Set default values
+        self.ui.startTime.setTime(
+            QtCore.QTime(9, 30, 0))
+        self.ui.endTime.setTime(
+            QtCore.QTime(16, 0, 0))
+        self.ui.simDate.setDate(
+            QtCore.QDate.currentDate()
+        )
+        global stockSym
+        self.ui.stockSymbol.setText("NDAQ")
+
+        #Connect methods to events
+        self.ui.pushButton.clicked.connect(self.simulate)
+        
+        #Set default values to global variables
         global alreadyRun
         alreadyRun = False
 
@@ -41,12 +54,12 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
         alreadyGraphed = False
 
 
+
     def show(self):#Display window
         self.ui.show() 
 
     def simulate(self): #Start simulation
         #Declare variables
-        global isGraphAvailable
         global epoch_time
         global stockSym
         global alreadyRun
@@ -95,7 +108,7 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
             args, config_args = parser.parse_known_args() 
             config_file = args.config
             #Default start time is 9:30:00
-            #Default end time is 11:30:00
+            #Default end time is  11:30:00
 
             # First parameter supplied is config file.
             print("Config file: ", config_file)  
@@ -126,8 +139,9 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
                 jsonFile.truncate()                                         #Delete whatever characters are left
                 jsonFile.close()      
             
-            isGraphAvailable = True
             print("Simulation complete")
+
+            self.graphLiquidity()
         else:
             print("End time not in the future relative to Start time")
 
@@ -136,43 +150,41 @@ class RMSC03(QtCore.QObject): #An object wrapping around the ui
         global stockSym
         global alreadyGraphed
 
-        if (isGraphAvailable): #Check if there's a graph
-            print("New Epoch time is: ", epoch_time)
-            TemporaryStorage = sys.argv[0]
-            sys.argv.clear()
-            sys.argv.append('liquidity_telemetry.py')
+        print("New Epoch time is: ", epoch_time)
+        TemporaryStorage = sys.argv[0]
+        sys.argv.clear()
+        sys.argv.append('liquidity_telemetry.py')
 
-            print("Current dir " + os.getcwd())
-            #Change directory
-            os.chdir('.\\util\\plotting')
-            parser = argparse.ArgumentParser(description='CLI utility for inspecting liquidity issues and transacted volumes')
+        print("Current dir " + os.getcwd())
+        #Change directory
+        os.chdir('.\\util\\plotting')
+        parser = argparse.ArgumentParser(description='CLI utility for inspecting liquidity issues and transacted volumes')
 
-            #Insert arguments
-            sys.argv.append("../../log/" + str(epoch_time) + "/EXCHANGE_AGENT.bz2")  
-            sys.argv.append("../../log/" + str(epoch_time) + "/ORDERBOOK_" + stockSym + "_FULL.bz2") 
-            sys.argv.append("-o")
-            sys.argv.append(str(epoch_time) + "_LiquidityGraph.png")         
-            sys.argv.append("-c")
-            sys.argv.append("configs/plot_configuration.json")    #Temporary, a json configuration file creator will be added
+        #Insert arguments
+        sys.argv.append("../../log/" + str(epoch_time) + "/EXCHANGE_AGENT.bz2")  
+        sys.argv.append("../../log/" + str(epoch_time) + "/ORDERBOOK_" + stockSym + "_FULL.bz2") 
+        sys.argv.append("-o")
+        sys.argv.append(str(epoch_time) + "_LiquidityGraph.png")         
+        sys.argv.append("-c")
+        sys.argv.append("configs/plot_configuration.json")    #Temporary, a json configuration file creator will be added
                             
-            args, config_args = parser.parse_known_args() 
-            #config_file = args.config
+        args, config_args = parser.parse_known_args() 
+        #config_file = args.config
 
 
-            if alreadyGraphed == False:
-                importlib.import_module('util.plotting.{}'.format('liquidity_telemetry'), package=None)
-                alreadyGraphed = True
-            else:
-                importlib.reload(importlib.import_module('util.plotting.{}'.format('liquidity_telemetry'), package=None))
-            
-            image = ImgWidget(str(epoch_time) + "_LiquidityGraph.png")
-            image.show()
-            
-            #Clean up
-            sys.argv.clear()
-            sys.argv.append(TemporaryStorage)
-            os.chdir('../../')
-            #print("Current Directory: ", os.getcwd())
-            print("Done")
+        if alreadyGraphed == False:
+            importlib.import_module('util.plotting.{}'.format('liquidity_telemetry'), package=None)
+            alreadyGraphed = True
         else:
-            print("Run simulation first") 
+            importlib.reload(importlib.import_module('util.plotting.{}'.format('liquidity_telemetry'), package=None))
+        
+        image = ImgWidget(str(epoch_time) + "_LiquidityGraph.png")
+        image.show()
+            
+        #Clean up
+        sys.argv.clear()
+        sys.argv.append(TemporaryStorage)
+        os.chdir('../../')
+        #print("Current Directory: ", os.getcwd())
+        print("Done")
+         
