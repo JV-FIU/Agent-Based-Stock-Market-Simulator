@@ -30,7 +30,7 @@
         <enum>Qt::LeftToRight</enum>
        </property>
        <property name="text">
-        <string>Select Configuration File</string>
+        <string>Select Option</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -51,12 +51,12 @@
        </item>
        <item>
         <property name="text">
-         <string>&lt;Placeholder 1&gt;</string>
+         <string>Simulate Future Date</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>&lt;Placeholder 2&gt;</string>
+         <string>Test Accuracy with Past Date</string>
         </property>
        </item>
       </widget>
