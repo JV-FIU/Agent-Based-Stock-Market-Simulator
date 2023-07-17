@@ -129,13 +129,17 @@ def print_liquidity_stats(transacted_orders, no_bid_idx, no_ask_idx, liquidity_d
                      f' mins)\n')
 
 #NEW: Divided the make_plots function in 4 parts 
+#NEW new method
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
 def make_plots1(plot_inputs, plot_params_dict, title=None, out_file="liquidity_telemetry.png"):
     """ Produce a plot with three subplots:
           1. Mid-price over time.
           2. Liquidity dropout events over time
           3. Transacted volume over time
     """
-    ax1 = plt.axes([1,1,1,1])
+    plt.figure()
 
     date = plot_inputs['mid_price'].index[0].date()
     midnight = pd.Timestamp(date)
@@ -144,22 +148,21 @@ def make_plots1(plot_inputs, plot_params_dict, title=None, out_file="liquidity_t
     shade_start = midnight + pd.to_timedelta(plot_params_dict['shade_start_time'])
     shade_end = midnight + pd.to_timedelta(plot_params_dict['shade_end_time'])
 
-    #  top plot -- mid price + fundamental
-    #NEW
+    # Top plot -- mid price + fundamental
     if plot_inputs['fundamental'] is not None:
-        plot_inputs['fundamental'].loc[xmin:xmax].plot(ax=ax1, color='blue', label="Fundamental")
-    plot_inputs['mid_price'].loc[xmin:xmax].plot(ax=ax1, color='black', label="Mid price")
-    ax1.axvspan(shade_start, shade_end, alpha=0.2, color='grey')
-    ax1.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    ax1.xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
-    ax1.xaxis.set_visible(True)
-    ax1.legend(fontsize='large')
-    ax1.set_ylabel("Mid-price ($)", fontsize='large')
-    ax1.set_xlim(xmin, xmax)
+        plot_inputs['fundamental'].loc[xmin:xmax].plot(color='blue', label="Fundamental")
+    plot_inputs['mid_price'].loc[xmin:xmax].plot(color='black', label="Mid price")
+    plt.axvspan(shade_start, shade_end, alpha=0.2, color='grey')
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    plt.gca().xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
+    plt.gca().xaxis.set_visible(True)
+    plt.legend(fontsize='large')
+    plt.ylabel("Mid-price ($)", fontsize='large')
+    plt.xlim(xmin, xmax)
 
     plt.subplots_adjust(hspace=0.05)
     
-    ax1.figure.savefig('out_file.png', format='png', dpi=300, transparent=False, bbox_inches='tight', pad_inches=0.03)
+    plt.savefig('out_file.png', format='png', dpi=300, transparent=False, bbox_inches='tight', pad_inches=0.03)
 
 def make_plots2(plot_inputs, plot_params_dict, title=None, out_file="liquidity_telemetry.png"):
     """ Produce a plot with three subplots:
@@ -168,7 +171,7 @@ def make_plots2(plot_inputs, plot_params_dict, title=None, out_file="liquidity_t
           3. Transacted volume over time
     """
 
-    ax2 = plt.axes([1,1,1,1])
+    plt.figure()
 
     date = plot_inputs['mid_price'].index[0].date()
     midnight = pd.Timestamp(date)
@@ -178,16 +181,16 @@ def make_plots2(plot_inputs, plot_params_dict, title=None, out_file="liquidity_t
     shade_end = midnight + pd.to_timedelta(plot_params_dict['shade_end_time'])
 
     # spread
-    plot_inputs['spread'].loc[xmin:xmax].plot(ax=ax2, color='black', label="Spread")
-    ax2.axvspan(shade_start, shade_end, alpha=0.2, color='grey')
-    ax2.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    ax2.xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
-    ax2.set_ylabel("Spread ($)", fontsize='large')
-    ax2.set_xlim(xmin, xmax)
+    plot_inputs['spread'].loc[xmin:xmax].plot(color='black', label="Spread")
+    plt.axvspan(shade_start, shade_end, alpha=0.2, color='grey')
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    plt.gca().xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
+    plt.ylabel("Spread ($)", fontsize='large')
+    plt.xlim(xmin, xmax)
 
     plt.subplots_adjust(hspace=0.05)
     
-    ax2.figure.savefig('out_file2.png', format='png', dpi=300, transparent=False, bbox_inches='tight', pad_inches=0.03)
+    plt.savefig('out_file2.png', format='png', dpi=300, transparent=False, bbox_inches='tight', pad_inches=0.03)
 
 def make_plots3(plot_inputs, plot_params_dict, title=None, out_file="liquidity_telemetry.png"):
     """ Produce a plot with three subplots:
@@ -196,7 +199,7 @@ def make_plots3(plot_inputs, plot_params_dict, title=None, out_file="liquidity_t
           3. Transacted volume over time
     """
 
-    ax3 = plt.axes([1,1,1,1])
+    plt.figure()
 
     date = plot_inputs['mid_price'].index[0].date()
     midnight = pd.Timestamp(date)
@@ -206,19 +209,17 @@ def make_plots3(plot_inputs, plot_params_dict, title=None, out_file="liquidity_t
     shade_end = midnight + pd.to_timedelta(plot_params_dict['shade_end_time'])
 
     # order volume imbalance
-
-    plot_inputs['order_volume_imbalance'].loc[xmin:xmax].plot(ax=ax3, color='black', label="Order volume imbalance")
-    ax3.axvspan(shade_start, shade_end, alpha=0.2, color='grey')
-    ax3.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    ax3.xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
-    
-    ax3.set_ylabel("$\\frac{\\mathrm{best\ ask\ size}}{\\mathrm{best\ ask\ size} + \\mathrm{best\ bid\ size}}$",
-                       fontsize='large')
-    ax3.set_xlim(xmin, xmax)
+    plot_inputs['order_volume_imbalance'].loc[xmin:xmax].plot(color='black', label="Order volume imbalance")
+    plt.axvspan(shade_start, shade_end, alpha=0.2, color='grey')
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    plt.gca().xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
+    plt.ylabel(r"$\frac{\mathrm{best\ ask\ size}}{\mathrm{best\ ask\ size} + \mathrm{best\ bid\ size}}$",
+               fontsize='large')
+    plt.xlim(xmin, xmax)
 
     plt.subplots_adjust(hspace=0.05)
     
-    ax3.figure.savefig('out_file3.png', format='png', dpi=300, transparent=False, bbox_inches='tight', pad_inches=0.03)
+    plt.savefig('out_file3.png', format='png', dpi=300, transparent=False, bbox_inches='tight', pad_inches=0.03)
 
 def make_plots4(plot_inputs, plot_params_dict, title=None, out_file="liquidity_telemetry.png"):
     """ Produce a plot with three subplots:
@@ -227,7 +228,7 @@ def make_plots4(plot_inputs, plot_params_dict, title=None, out_file="liquidity_t
           3. Transacted volume over time
     """
 
-    ax5 = plt.axes([1,1,1,1])
+    plt.figure()
 
     date = plot_inputs['mid_price'].index[0].date()
     midnight = pd.Timestamp(date)
@@ -236,20 +237,20 @@ def make_plots4(plot_inputs, plot_params_dict, title=None, out_file="liquidity_t
     shade_start = midnight + pd.to_timedelta(plot_params_dict['shade_start_time'])
     shade_end = midnight + pd.to_timedelta(plot_params_dict['shade_end_time'])
 
-    #  Bottom plot -- transacted volume
+    # Bottom plot -- transacted volume
+    plt.bar(plot_inputs['transacted_volume']['center'], plot_inputs['transacted_volume']['counts'], align='center',
+            width=plot_inputs['transacted_volume']['width'], fill=False)
 
-    ax5.bar(plot_inputs['transacted_volume']['center'], plot_inputs['transacted_volume']['counts'], align='center',
-                width=plot_inputs['transacted_volume']['width'], fill=False)
-
-    ax5.axvspan(shade_start, shade_end, alpha=0.2, color='grey')
-    ax5.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    ax5.xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
-    ax5.tick_params(axis='both', which='major', labelsize=14)
-    ax5.set_ylabel("Transacted Volume", fontsize='large')
-    ax5.set_xlim(xmin, xmax)
+    plt.axvspan(shade_start, shade_end, alpha=0.2, color='grey')
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+    plt.gca().xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M"))
+    plt.gca().tick_params(axis='both', which='major', labelsize=14)
+    plt.ylabel("Transacted Volume", fontsize='large')
+    plt.xlim(xmin, xmax)
 
     plt.subplots_adjust(hspace=0.05)
-    ax5.figure.savefig('out_file5.png', format='png', dpi=300, transparent=False, bbox_inches='tight', pad_inches=0.03)
+    plt.savefig('out_file4.png', format='png', dpi=300, transparent=False, bbox_inches='tight', pad_inches=0.03)
+
 
 def load_fundamental(ob_path):
     """ Retrives fundamental path from orderbook path. """
@@ -304,8 +305,8 @@ def main(exchange_path, ob_path, title=None, outfile='liquidity_telemetry.png', 
     make_plots3(plot_inputs, PLOT_PARAMS_DICT, title=title, out_file=outfile)
     make_plots4(plot_inputs, PLOT_PARAMS_DICT, title=title, out_file=outfile)
 
-    '''if verbose:
-        print_liquidity_stats(transacted_orders, no_bid_idx, no_ask_idx)''' #FIXME
+    if verbose:
+        print_liquidity_stats(transacted_orders, no_bid_idx, no_ask_idx)
 
     print("Done!")
 
