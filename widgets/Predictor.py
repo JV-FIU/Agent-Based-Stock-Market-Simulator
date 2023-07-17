@@ -75,6 +75,7 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         
 
         #Check if any of both times is in the future
+        #NOTE: Must check if this thing works when the current time is late at night
         if (startTime.dateTime().toSecsSinceEpoch() > epoch_time) or (endTime.dateTime().toSecsSinceEpoch() > epoch_time):
             #Check if end time is in the future, relative to the start time
             if (startTime.dateTime().toSecsSinceEpoch() < endTime.dateTime().toSecsSinceEpoch()): 
