@@ -1,7 +1,7 @@
 #ABIDES Agent-based Stock Market Simulator main file
 #Created by: Jorge Valdes-Santiago
 #Date created: June 26, 2023
-#Modified: July 17, 2023
+#Modified: July 18, 2023
 
 from PySide6 import QtWidgets
 from PySide6.QtUiTools import QUiLoader
@@ -38,8 +38,7 @@ class AbidesMain(QtCore.QObject):
                 self.predictor.show()
             elif selection == 'Test Prediction Accuracy with Past Date':
                 print("Opening Past sim...")
-                #self.tester.show()
-                print("Currently Unavailable...")   #FIXME: Delete after tester completion
+                self.tester.show()
             else:
                 print("Please select an option")
 
