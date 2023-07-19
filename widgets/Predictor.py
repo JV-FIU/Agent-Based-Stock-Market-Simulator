@@ -1,11 +1,12 @@
 #RMSC03-based predicting program for Agent-based Stock Market Simulator
 #Created by: Jorge Valdes-Santiago
 #Date created:  July 16, 2023
-#Updated:       July 17, 2023
+#Updated:       July 18, 2023
 
 #IMPORTANT NOTE: All code related to finding content in directories are using the location of absms.py as reference
 
 from PySide6 import QtCore
+from PySide6.QtGui import QPixmap
 from PySide6.QtUiTools import QUiLoader
 import argparse
 import sys
@@ -75,8 +76,8 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         
 
         #Check if any of both times is in the future
-        #NOTE: Must check if this thing works when the current time is late at night
-        if (startTime.dateTime().toSecsSinceEpoch() > epoch_time) or (endTime.dateTime().toSecsSinceEpoch() > epoch_time):
+        #FIXME: Must check if this thing works when the current time is late at night
+        if (True): #(startTime.dateTime().toSecsSinceEpoch() > epoch_time) or (endTime.dateTime().toSecsSinceEpoch() > epoch_time):
             #Check if end time is in the future, relative to the start time
             if (startTime.dateTime().toSecsSinceEpoch() < endTime.dateTime().toSecsSinceEpoch()): 
                 print("Stock symbol:    ", stockSym)
@@ -84,9 +85,15 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
                 print("Start Time:      ", startTime.time().toString("hh:mm:ss"))
                 print("End Time:        ", endTime.time().toString("hh:mm:ss"))
                 #os.chdir('../')
-                #FIXME: Considering adding the instructions that will take seed data from UI
-                seed = int(pd.Timestamp.now().timestamp() * 1000000) % (2 ** 32 - 1) #Generate random seed (Temporary) 
 
+                #Set up seed
+                seed = 0
+                if (self.ui.checkBox.isChecked()):
+                    seed = self.ui.seedSelector.value()
+                else:
+                    seed = int(pd.Timestamp.now().timestamp() * 1000000) % (2 ** 32 - 1) #Generate random seed (Temporary) 
+
+                print("Seed: ", seed)
 
                 #ABIDES functionality
                 parser = argparse.ArgumentParser(description='Simulation configuration.')
@@ -151,7 +158,8 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
             else:
                 print("End time not in the future relative to Start time")
         else:
-            print("Set start or end time to a time in the future")
+            print("Start or End time not in future")
+        
             
 
     def graphLiquidity(self): #Graph data
@@ -159,12 +167,12 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         global stockSym
         global alreadyGraphed
 
-        print("New Epoch time is: ", epoch_time)
+        #print("New Epoch time is: ", epoch_time)
         TemporaryStorage = sys.argv[0]
         sys.argv.clear()
         sys.argv.append('liquidity_telemetry.py')
 
-        print("Current dir " + os.getcwd())
+        #print("Current dir " + os.getcwd())
         #Change directory
         os.chdir('.\\util\\plotting')
         parser = argparse.ArgumentParser(description='CLI utility for inspecting liquidity issues and transacted volumes')
@@ -173,7 +181,7 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         sys.argv.append("../../log/" + str(epoch_time) + "/EXCHANGE_AGENT.bz2")  
         sys.argv.append("../../log/" + str(epoch_time) + "/ORDERBOOK_" + stockSym + "_FULL.bz2") 
         sys.argv.append("-o")
-        sys.argv.append(str(epoch_time) + "_LiquidityGraph.png")         
+        sys.argv.append(str(epoch_time) + "_LiquidityGraph")         
         sys.argv.append("-c")
         sys.argv.append("configs/plot_configuration.json")    #Temporary, a json configuration file creator will be added
                             
@@ -182,13 +190,17 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
 
         #Check if graphing program has been executed, else reload program
         if alreadyGraphed == False:
-            importlib.import_module('util.plotting.{}'.format('liquidity_telemetry'), package=None)
+            importlib.import_module('util.plotting.{}'.format('liquidity_telemetry_multi'), package=None)
             alreadyGraphed = True
         else:
-            importlib.reload(importlib.import_module('util.plotting.{}'.format('liquidity_telemetry'), package=None))
+            importlib.reload(importlib.import_module('util.plotting.{}'.format('liquidity_telemetry_multi'), package=None))
         
-        image = ImgWidget(str(epoch_time) + "_LiquidityGraph.png")
-        image.show()
+        #Generate graphs
+        self.generateImage((str(epoch_time) + "_LiquidityGraph_Midprice.png"), self.ui.imageContainer_1)
+        self.generateImage((str(epoch_time) + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
+        self.generateImage((str(epoch_time) + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
+        self.generateImage((str(epoch_time) + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)
+
             
         #Clean up
         sys.argv.clear()
@@ -197,3 +209,10 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         #print("Current Directory: ", os.getcwd())
         print("Graphing process completed!")
          
+    def generateImage(self, imageLocation, displayName):
+        
+        #Delete Text
+        displayName.setText("")
+
+        #Display image 
+        displayName.setPixmap(QPixmap(imageLocation).scaled(displayName.width(), displayName.height(), QtCore.Qt.KeepAspectRatio))
