@@ -75,6 +75,10 @@ QTabBar::tab:!selected {
 	background-color: rgb(97, 176, 120);
 	color: white;
 }
+
+QTabWidget::pane {
+	border: none;
+}
 </string>
   </property>
   <widget class="QWidget" name="CentralWidget" native="true">
