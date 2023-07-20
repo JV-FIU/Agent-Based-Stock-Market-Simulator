@@ -24,6 +24,9 @@ setup(name='abides',
           'seaborn',
           'six',
           'tqdm',
-          'psutil'
+          'psutil',
+          'pyside6',
+          'pyqt6',
+          'pyqt5'
       ]
       )
