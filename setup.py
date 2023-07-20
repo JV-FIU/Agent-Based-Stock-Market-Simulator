@@ -27,6 +27,7 @@ setup(name='abides',
           'psutil',
           'pyside6',
           'pyqt6',
-          'pyqt5'
+          'pyqt5',
+          'time'
       ]
       )
