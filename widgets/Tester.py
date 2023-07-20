@@ -131,7 +131,7 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
                 #config = importlib.import_module('config.{}'.format(config_file), package=None)
                 
                 if alreadyRun == False:
-                    importlib.import_module('config.{}'.format(config_file), package=None) #FIXME: The program is ignoring this line for some reason when the sim is run more than once
+                    importlib.import_module('config.{}'.format(config_file), package=None) 
                     alreadyRun = True
                 else:
                     importlib.reload(importlib.import_module('config.{}'.format(config_file), package=None))
