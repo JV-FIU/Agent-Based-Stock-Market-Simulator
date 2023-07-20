@@ -1,7 +1,7 @@
 #RMSC03-based predicting program for Agent-based Stock Market Simulator
 #Created by: Jorge Valdes-Santiago
 #Date created:  July 16, 2023
-#Updated:       July 18, 2023
+#Updated:       July 20, 2023
 
 #IMPORTANT NOTE: All code related to finding content in directories are using the location of absms.py as reference
 
@@ -113,7 +113,7 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
                 sys.argv.append("-s")
                 sys.argv.append(str(seed))
                 sys.argv.append("-l")
-                sys.argv.append(str(epoch_time))   
+                sys.argv.append((str(epoch_time) + "_" + str(self.ui.stockSymbol.text())))   
                 sys.argv.append("--start-time")
                 sys.argv.append(startTime.time().toString("hh:mm:ss"))
                 sys.argv.append("--end-time")
@@ -179,10 +179,10 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         parser = argparse.ArgumentParser(description='CLI utility for inspecting liquidity issues and transacted volumes')
 
         #Insert arguments
-        sys.argv.append("../../log/" + str(epoch_time) + "/EXCHANGE_AGENT.bz2")  
-        sys.argv.append("../../log/" + str(epoch_time) + "/ORDERBOOK_" + stockSym + "_FULL.bz2") 
+        sys.argv.append("../../log/" + (str(epoch_time) + "_" + stockSym) + "/EXCHANGE_AGENT.bz2")  
+        sys.argv.append("../../log/" + (str(epoch_time) + "_" + stockSym) + "/ORDERBOOK_" + stockSym + "_FULL.bz2") 
         sys.argv.append("-o")
-        sys.argv.append(str(epoch_time) + "_LiquidityGraph")         
+        sys.argv.append(str(epoch_time) + "_" + stockSym + "_LiquidityGraph")         
         sys.argv.append("-c")
         sys.argv.append("configs/plot_configuration.json")    #Temporary, a json configuration file creator will be added
                             
@@ -197,10 +197,10 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
             importlib.reload(importlib.import_module('util.plotting.{}'.format('liquidity_telemetry_multi'), package=None))
         
         #Generate graphs
-        self.generateImage((str(epoch_time) + "_LiquidityGraph_Midprice.png"), self.ui.imageContainer_1)
-        self.generateImage((str(epoch_time) + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
-        self.generateImage((str(epoch_time) + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
-        self.generateImage((str(epoch_time) + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)
+        self.generateImage2((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Midprice.png"), self.ui.imageContainer_1)
+        self.generateImage2((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
+        self.generateImage2((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
+        self.generateImage2((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)
 
             
         #Clean up
@@ -210,10 +210,26 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         #print("Current Directory: ", os.getcwd())
         print("Graphing process completed!")
          
-    def generateImage(self, imageLocation, displayName):
+    #This method is fine, but for some reason the images of the hidden tabs are being displayed in a very low resolution
+    def generateImage(self, imageLocation, displayName): 
         
         #Delete Text
         displayName.setText("")
 
         #Display image 
         displayName.setPixmap(QPixmap(imageLocation).scaled(displayName.width(), displayName.height(), QtCore.Qt.KeepAspectRatio))
+        print("Display width:", str(displayName.width()), "; Display height:", str(displayName.height()))
+
+    #Temporary fix until the sizing bug is patched
+    def generateImage2(self, imageLocation, displayName):
+        
+        #Delete Text
+        displayName.setText("")
+
+        #Temporary size fix
+        w = self.ui.imageContainer_1.width()
+        h = self.ui.imageContainer_1.height()
+
+        #Display image 
+        displayName.setPixmap(QPixmap(imageLocation).scaled(w, h, QtCore.Qt.KeepAspectRatio))
+        #print("Display width:", str(displayName.width()), "; Display height:", str(displayName.height()))
