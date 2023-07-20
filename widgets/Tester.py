@@ -33,6 +33,10 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
         self.ui = loader.load("widgets/UI/RMSC03_Past.ui", None)
         self.ui.setWindowTitle("Agent-Based Stock Market Simulator - Simulate Future")
 
+        #Set time to local time zone
+        self.ui.startTime.setTimeSpec(QtCore.Qt.TimeSpec.LocalTime)
+        self.ui.endTime.setTimeSpec(QtCore.Qt.TimeSpec.LocalTime)
+
         #Set default values
         self.ui.startTime.setDate(
             QtCore.QDate.currentDate())
@@ -73,9 +77,22 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
         startTime = self.ui.startTime
         endTime = self.ui.endTime
         selectedDate = self.ui.simDate
+
+        #Store time values (bug fix)
+        start = self.ui.startTime.time()
+        end = self.ui.endTime.time()
+
+        #Set dates (bug fix)
+        startTime.setDate(
+            QtCore.QDate(selectedDate.date()))
+        startTime.setTime(start)
+
+        endTime.setDate(
+            QtCore.QDate(selectedDate.date()))
+        endTime.setTime(end)
+
         
         #Check if both times are in the past
-        #FIXME: This simulator version is supposed to run only with past dates, not future ones
         if (startTime.dateTime().toSecsSinceEpoch() < epoch_time) and (endTime.dateTime().toSecsSinceEpoch() < epoch_time):
             
             #Check if end time is in the future, relative to the start time
@@ -131,7 +148,7 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
                 #config = importlib.import_module('config.{}'.format(config_file), package=None)
                 
                 if alreadyRun == False:
-                    importlib.import_module('config.{}'.format(config_file), package=None) 
+                    importlib.import_module('config.{}'.format(config_file), package=None)
                     alreadyRun = True
                 else:
                     importlib.reload(importlib.import_module('config.{}'.format(config_file), package=None))
