@@ -289,6 +289,9 @@ QTabWidget::pane {
              <pointsize>9</pointsize>
             </font>
            </property>
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
         </layout>
