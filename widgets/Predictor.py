@@ -33,6 +33,11 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         self.ui = loader.load("widgets/UI/RMSC03_Future.ui", None)
         self.ui.setWindowTitle("Agent-Based Stock Market Simulator - Simulate Future")
 
+        
+        #Set time to local time zone
+        self.ui.startTime.setTimeSpec(QtCore.Qt.TimeSpec.LocalTime)
+        self.ui.endTime.setTimeSpec(QtCore.Qt.TimeSpec.LocalTime)
+        
         #Set default values
         self.ui.startTime.setDate(
             QtCore.QDate.currentDate())
@@ -58,9 +63,9 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         alreadyGraphed = False
 
 
-
     def show(self):#Display window
         self.ui.show() 
+
 
     def simulate(self): #Start simulation
         #Declare variables
@@ -74,11 +79,22 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         endTime = self.ui.endTime
         selectedDate = self.ui.simDate
         
+        #Store time values (bug fix)
+        start = self.ui.startTime.time()
+        end = self.ui.endTime.time()
+
+        #Set dates (bug fix)
+        startTime.setDate(
+            QtCore.QDate(selectedDate.date()))
+        startTime.setTime(start)
+
+        endTime.setDate(
+            QtCore.QDate(selectedDate.date()))
+        endTime.setTime(end)
+        
 
         #Check if any of both times is in the future
-        #FIXME: Must check if this thing works when the current time is late at night
-        #FIXME: Temporary condition until the date checker is fixed
-        if (True): #(startTime.dateTime().toSecsSinceEpoch() > epoch_time) or (endTime.dateTime().toSecsSinceEpoch() > epoch_time):
+        if ((startTime.dateTime().toSecsSinceEpoch() > epoch_time) or (endTime.dateTime().toSecsSinceEpoch() > epoch_time)):
             #Check if end time is in the future, relative to the start time
             if (startTime.dateTime().toSecsSinceEpoch() < endTime.dateTime().toSecsSinceEpoch()): 
                 print("Stock symbol:    ", stockSym)
@@ -92,7 +108,7 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
                 if (self.ui.checkBox.isChecked()):
                     seed = self.ui.seedSelector.value()
                 else:
-                    seed = int(pd.Timestamp.now().timestamp() * 1000000) % (2 ** 32 - 1) #Generate random seed 
+                    seed = int(pd.Timestamp.now().timestamp() * 1000000) % (2 ** 32 - 1) #Generate random seed (Temporary) 
 
                 print("Seed: ", seed)
 
@@ -131,12 +147,13 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
                 print("Running Simulation... This might take a while")
                 #config = importlib.import_module('config.{}'.format(config_file), package=None)
                 
+                
                 if alreadyRun == False:
                     importlib.import_module('config.{}'.format(config_file), package=None) 
                     alreadyRun = True
                 else:
                     importlib.reload(importlib.import_module('config.{}'.format(config_file), package=None))
-                    
+                
                 
                 #Clear arguments after running simulation
                 TemporaryStorage = sys.argv[0]
@@ -155,11 +172,28 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
                 
                 print("Simulation complete")
 
-                self.graphLiquidity()
+                self.graphLiquidity() 
             else:
                 print("End time not in the future relative to Start time")
         else:
             print("Start or End time not in future")
+            
+            ''' #Uncomment to debug time-related problems
+            print("Epoch (Now): ", epoch_time)
+            print("Start Epoch: ", startTime.dateTime().toSecsSinceEpoch())
+            print("End Epoch:   ", endTime.dateTime().toSecsSinceEpoch())
+            print("Today: ", time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(epoch_time)))
+            print("Start time:  ", startTime.dateTime().toLocalTime().toString('yyyy / MM / dd  hh:mm t'))
+            print("End time:    ", endTime.dateTime().toLocalTime().toString('yyyy / MM / dd  hh:mm t'))
+            print(str(startTime.timeSpec()))
+            if (startTime.dateTime().toSecsSinceEpoch() > epoch_time):
+                print("Start time not in future")
+            elif (endTime.dateTime().toSecsSinceEpoch() > epoch_time):
+                print("End time not in future")
+            else:
+                print("Both times not in future")
+            '''
+
         
             
 
@@ -184,7 +218,7 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         sys.argv.append("-o")
         sys.argv.append(str(epoch_time) + "_" + stockSym + "_LiquidityGraph")         
         sys.argv.append("-c")
-        sys.argv.append("configs/plot_configuration.json")    #Temporary, a json configuration file creator will be added
+        sys.argv.append("configs/plot_configuration.json")  
                             
         args, config_args = parser.parse_known_args() 
         #config_file = args.config
