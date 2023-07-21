@@ -1,7 +1,7 @@
 #RMSC03-based accuracy program for Agent-based Stock Market Simulator
 #Created by: Jorge Valdes-Santiago
 #Date created:  July 16, 2023
-#Updated:       July 20, 2023
+#Updated:       July 21, 2023
 
 #IMPORTANT NOTE: All code related to finding content in directories are using the location of absms.py as reference
 
@@ -50,9 +50,6 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             QtCore.QDate.currentDate())
         global stockSym
         self.ui.stockSymbol.setText("NDAQ")
-
-        #Connect methods to events
-        self.ui.pushButton.clicked.connect(self.simulate)
         
         #Set default values to global variables
         global alreadyRun
@@ -60,6 +57,10 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
 
         global alreadyGraphed
         alreadyGraphed = False
+
+        #Connect methods to events
+        self.ui.pushButton.clicked.connect(self.simulate)
+        self.ui.fetchData.clicked.connect(self.fetchData)
 
 
 
@@ -169,6 +170,31 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
                     jsonFile.truncate()                                         #Delete whatever characters are left
                     jsonFile.close()      
                 
+                #Open json file to store latest simulation configuration 
+                with open('util/plotting/configs/latest_simulation.json', 'r+') as simFile:
+                    simData = json.load(simFile)                              #Load json file
+                    
+                    #Save latest simulation time data
+                    simData['year'] = selectedDate.date().year()              #Set year
+                    simData['month'] = selectedDate.date().month()            #Set month
+                    simData['day'] = selectedDate.date().day()                #Set day
+                    
+                    #Set start time
+                    simData['start-hour'] = startTime.time().hour()           #Set start hour
+                    simData['start-minute'] = startTime.time().minute()       #Set start minutes
+
+                    #Set end time
+                    simData['end-hour'] = endTime.time().hour()               #Set end hour
+                    simData['end-minute'] = endTime.time().minute()           #Set end minutes 
+
+                    #Set data name
+                    simData['dataName'] = (str(epoch_time) + "_" + str(self.ui.stockSymbol.text()))
+                
+                    simFile.seek(0)                                            #Go to top of file
+                    json.dump(simData, simFile, indent=4)                      #Insert edits into file
+                    simFile.truncate()                                         #Delete whatever characters are left
+                    simFile.close()
+
                 print("Simulation complete")
 
                 #Graph data
@@ -182,7 +208,7 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
         
             
 
-    def graphLiquidity(self, date, startTime, endTime): #Graph data
+    def graphLiquidity(self, date, startTime, endTime, data=None, tickerSym=None): #Graph data
         global epoch_time
         global stockSym
         global alreadyGraphed
@@ -197,39 +223,72 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
         os.chdir('.\\util\\plotting')
         parser = argparse.ArgumentParser(description='CLI utility for inspecting liquidity issues and transacted volumes')
 
-        #Insert arguments
-        sys.argv.append("../../log/" + (str(epoch_time) + "_" + stockSym) + "/EXCHANGE_AGENT.bz2")  
-        sys.argv.append("../../log/" + (str(epoch_time) + "_" + stockSym) + "/ORDERBOOK_" + stockSym + "_FULL.bz2") 
-        sys.argv.append("-o")
-        sys.argv.append(str(epoch_time) + "_" + stockSym + "_LiquidityGraph")         
-        sys.argv.append("-c")
-        sys.argv.append("configs/plot_configuration.json")
-        sys.argv.append("-s")
-        sys.argv.append(stockSym)
-        sys.argv.append("-d")
-        sys.argv.append(date)
-        sys.argv.append("-st")
-        sys.argv.append(startTime)
-        sys.argv.append("-et")
-        sys.argv.append(endTime)                       
+        if (data or tickerSym) is None: #NOTE: Must keep an eye on this if statement
+            #Insert arguments
+            sys.argv.append("../../log/" + (str(epoch_time) + "_" + stockSym) + "/EXCHANGE_AGENT.bz2")  
+            sys.argv.append("../../log/" + (str(epoch_time) + "_" + stockSym) + "/ORDERBOOK_" + stockSym + "_FULL.bz2") 
+            sys.argv.append("-o")
+            sys.argv.append(str(epoch_time) + "_" + stockSym + "_LiquidityGraph")         
+            sys.argv.append("-c")
+            sys.argv.append("configs/plot_configuration.json")
+            sys.argv.append("-s")
+            sys.argv.append(stockSym)
+            sys.argv.append("-d")
+            sys.argv.append(date)
+            sys.argv.append("-st")
+            sys.argv.append(startTime)
+            sys.argv.append("-et")
+            sys.argv.append(endTime)                       
 
-                            
-        args, config_args = parser.parse_known_args() 
-        #config_file = args.config
+                                
+            args, config_args = parser.parse_known_args() 
+            #config_file = args.config
 
-        #Check if graphing program has been executed, else reload program
-        if alreadyGraphed == False:
-            importlib.import_module('util.plotting.{}'.format('LT_Market_Comparison'), package=None)
-            alreadyGraphed = True
+            #Check if graphing program has been executed, else reload program
+            if alreadyGraphed == False:
+                importlib.import_module('util.plotting.{}'.format('LT_Market_Comparison'), package=None)
+                alreadyGraphed = True
+            else:
+                importlib.reload(importlib.import_module('util.plotting.{}'.format('LT_Market_Comparison'), package=None))
+            
+            #Generate graphs
+            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Midprice.png"), self.ui.imageContainer_1)
+            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
+            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
+            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)
         else:
-            importlib.reload(importlib.import_module('util.plotting.{}'.format('liquidity_telemetry_multi'), package=None))
-        
-        #Generate graphs
-        self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Midprice.png"), self.ui.imageContainer_1)
-        self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
-        self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
-        self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)
+            #Insert arguments
+            sys.argv.append("../../log/" + data + "/EXCHANGE_AGENT.bz2")  
+            sys.argv.append("../../log/" + data + "/ORDERBOOK_" + tickerSym + "_FULL.bz2") 
+            sys.argv.append("-o")
+            sys.argv.append(data + "_LiquidityGraph")         
+            sys.argv.append("-c")
+            sys.argv.append("configs/plot_configuration.json")
+            sys.argv.append("-s")
+            sys.argv.append(tickerSym)
+            sys.argv.append("-d")
+            sys.argv.append(date)
+            sys.argv.append("-st")
+            sys.argv.append(startTime)
+            sys.argv.append("-et")
+            sys.argv.append(endTime)                       
 
+                                
+            args, config_args = parser.parse_known_args() 
+            #config_file = args.config
+
+            #Check if graphing program has been executed, else reload program
+            if alreadyGraphed == False:
+                importlib.import_module('util.plotting.{}'.format('LT_Market_Comparison'), package=None)
+                alreadyGraphed = True
+            else:
+                importlib.reload(importlib.import_module('util.plotting.{}'.format('LT_Market_Comparison'), package=None))
+            
+            #Generate graphs
+            self.generateImage((data + "_LiquidityGraph_Midprice.png"), self.ui.imageContainer_1)
+            self.generateImage((data + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
+            self.generateImage((data + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
+            self.generateImage((data + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)
             
         #Clean up
         sys.argv.clear()
@@ -238,6 +297,8 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
         #print("Current Directory: ", os.getcwd())
         print("Graphing process completed!")
          
+
+
     def generateImage(self, imageLocation, displayName):
         
         #Delete Text
@@ -245,3 +306,55 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
 
         #Display image 
         displayName.setPixmap(QPixmap(imageLocation).scaled(displayName.width(), displayName.height(), QtCore.Qt.KeepAspectRatio))
+
+    
+    #NOTE: Might add an if statement that checks if its simulation was done within 30 from today
+    #NOTE: Might also add an if statement that checks if a simulation run was done
+    def fetchData(self):
+        print("Fetching latest simulation data...")
+        
+        #Get latest simulation configuration and set variables
+        with open('util/plotting/configs/latest_simulation.json', 'r') as simFile:
+            simData = json.load(simFile)    #Load json file
+
+            #Retrieve  latest simulation configuration data
+            #Get Date
+            year = simData['year']
+            month = simData['month']
+            day = simData['day']
+            
+            #Get times
+            startHour = simData['start-hour']
+            startMinute = simData['start-minute']
+            endHour = simData['end-hour']
+            endMinute = simData['end-minute']
+
+            #Get data name
+            dataName = simData['dataName']
+
+            #Get Ticker
+            ticker = simData['ticker']
+
+            #Set variables
+            self.ui.startTime.setDate(
+               QtCore.QDate(year, month, day))          #Set simulation date to start time
+            self.ui.startTime.setTime(
+               QtCore.QTime(startHour, startMinute, 0)) #Set sim start time
+            self.ui.endTime.setDate(
+               QtCore.QDate(year, month, day))          #Set simulation date to end time
+            self.ui.endTime.setTime(
+               QtCore.QTime(endHour, endMinute, 0))     #Set simulation end time
+            self.ui.simDate.setDate(
+               QtCore.QDate(year, month, day))          #Set simulation date
+            
+            self.ui.stockSymbol.setText(ticker)         #Set ticker
+            
+            simFile.close()
+
+            #Graph data
+            self.graphLiquidity(self.ui.simDate.date().toString('yyyyMMdd'),
+                                self.ui.startTime.time().toString("hh:mm:ss"),
+                                self.ui.endTime.time().toString("hh:mm:ss"),
+                                dataName,
+                                ticker)
+            
