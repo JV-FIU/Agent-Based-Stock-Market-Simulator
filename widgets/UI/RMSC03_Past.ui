@@ -44,7 +44,7 @@
 	color: black;
 }
 
-#graphResults, #pushButton {
+#graphResults, #pushButton, #fetchData {
 	background-color: white;
     border-width: 2px;
     border-radius: 5px;
@@ -464,6 +464,30 @@ QTabWidget::pane {
       </property>
      </widget>
     </widget>
+   </widget>
+   <widget class="QWidget" name="buttonW_2" native="true">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>200</y>
+      <width>231</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_5">
+     <item>
+      <widget class="QPushButton" name="fetchData">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Get Latest Simulation Data</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
  </widget>
