@@ -28,6 +28,7 @@ setup(name='abides',
           'pyside6',
           'pyqt6',
           'pyqt5',
-          'time'
+          'time',
+          'yfinance'
       ]
       )
