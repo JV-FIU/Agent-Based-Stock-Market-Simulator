@@ -1,7 +1,7 @@
 #RMSC03-based predicting program for Agent-based Stock Market Simulator
 #Created by: Jorge Valdes-Santiago
 #Date created:  July 16, 2023
-#Updated:       July 20, 2023
+#Updated:       July 21, 2023
 
 #IMPORTANT NOTE: All code related to finding content in directories are using the location of absms.py as reference
 
@@ -113,6 +113,8 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
                 print("Seed: ", seed)
 
                 #ABIDES functionality
+                dataName = (str(epoch_time) + "_" + str(self.ui.stockSymbol.text()))
+
                 parser = argparse.ArgumentParser(description='Simulation configuration.')
                 parser.add_argument('-c', '--config', required=True,
                                     help='Name of config file to execute')
@@ -129,7 +131,7 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
                 sys.argv.append("-s")
                 sys.argv.append(str(seed))
                 sys.argv.append("-l")
-                sys.argv.append((str(epoch_time) + "_" + str(self.ui.stockSymbol.text())))   
+                sys.argv.append(dataName)   
                 sys.argv.append("--start-time")
                 sys.argv.append(startTime.time().toString("hh:mm:ss"))
                 sys.argv.append("--end-time")
@@ -170,6 +172,31 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
                     jsonFile.truncate()                                         #Delete whatever characters are left
                     jsonFile.close()      
                 
+                #Open json file to store latest simulation configuration 
+                with open('util/plotting/configs/latest_simulation.json', 'r+') as simFile:
+                    simData = json.load(simFile)                              #Load json file
+                    
+                    #Save latest simulation time data
+                    simData['year'] = selectedDate.date().year()              #Set year
+                    simData['month'] = selectedDate.date().month()            #Set month
+                    simData['day'] = selectedDate.date().day()                #Set day
+                    
+                    #Set start time
+                    simData['start-hour'] = startTime.time().hour()           #Set start hour
+                    simData['start-minute'] = startTime.time().minute()       #Set start minutes
+
+                    #Set end time
+                    simData['end-hour'] = endTime.time().hour()               #Set end hour
+                    simData['end-minute'] = endTime.time().minute()           #Set end minutes 
+
+                    #Set data name
+                    simData['dataName'] = (str(epoch_time) + "_" + str(self.ui.stockSymbol.text()))
+                
+                    simFile.seek(0)                                            #Go to top of file
+                    json.dump(simData, simFile, indent=4)                      #Insert edits into file
+                    simFile.truncate()                                         #Delete whatever characters are left
+                    simFile.close()
+
                 print("Simulation complete")
 
                 self.graphLiquidity() 
