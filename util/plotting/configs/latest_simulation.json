@@ -6,5 +6,6 @@
     "start-minute": 30,
     "end-hour": 4,
     "end-minute": 0,
-    "dataName": "NaN"
+    "dataName": "NaN",
+    "ticker": "NDAQ"
 }
