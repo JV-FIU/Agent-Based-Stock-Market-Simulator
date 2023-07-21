@@ -14,8 +14,6 @@ import importlib
 import time
 import json
 import os
-from widgets.ImageViewer import ImageWidget as ImgWidget
-
 import pandas as pd
 
 loader = QUiLoader()
@@ -190,7 +188,10 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
                     simData['end-minute'] = endTime.time().minute()           #Set end minutes 
 
                     #Set data name
-                    simData['dataName'] = (str(epoch_time) + "_" + str(self.ui.stockSymbol.text()))
+                    simData['dataName'] = (str(epoch_time) + "_" + stockSym)
+
+                    #Set ticker
+                    simData['ticker'] = stockSym
                 
                     simFile.seek(0)                                            #Go to top of file
                     json.dump(simData, simFile, indent=4)                      #Insert edits into file
