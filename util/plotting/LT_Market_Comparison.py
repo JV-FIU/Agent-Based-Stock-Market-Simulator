@@ -243,7 +243,7 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
     #Save RMSE result
     with open('configs/RMSE.json', 'r+') as rmseFile:
         storedRMSE = json.load(rmseFile)                   #Load json file
-        storedRMSE['rmse'] = rmse                #Save Root Mean Square
+        storedRMSE['rmse'] = rmse                          #Save Root Mean Square
         storedRMSE['rounded-rmse'] = round(rmse, 2)        #Save Root Mean Square as a 2-decimal digit
         rmseFile.seek(0)                                   #Go to top of file
         json.dump(storedRMSE, rmseFile, indent=4)          #Insert edits into file
