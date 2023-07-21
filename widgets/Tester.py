@@ -254,7 +254,9 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Midprice.png"), self.ui.imageContainer_1)
             self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
             self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
-            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)
+            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)        
+            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_CrossCorrelation.png"), self.ui.realData)
+            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_OpeningPrices.png"), self.ui.crossCorrelation)
         else:
             #Insert arguments
             sys.argv.append("../../log/" + data + "/EXCHANGE_AGENT.bz2")  
@@ -288,6 +290,8 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             self.generateImage((data + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
             self.generateImage((data + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
             self.generateImage((data + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)
+            self.generateImage((data + "_LiquidityGraph_CrossCorrelation.png"), self.ui.realData)
+            self.generateImage((data + "_LiquidityGraph_OpeningPrices.png"), self.ui.crossCorrelation)
             
         #Clean up
         sys.argv.clear()
