@@ -141,6 +141,7 @@ def make_plots0(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
 
+    print("Plotting Real-Life data...")
     date1 = plot_inputs['mid_price'].index[0].date()
     #date2 = str(date1)
     basename = os.path.basename(ob_path)
@@ -168,7 +169,12 @@ def make_plots0(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime
     plt.xlim(xmin, xmax)
     
     plt.subplots_adjust(hspace=0.05)
-    plt.savefig("opening_prices.png", format='png', dpi=300, transparent=False, bbox_inches='tight', pad_inches=0.03)
+    
+    #Check if user added filename
+    if (out_file != "liquidity_telemetry.png"):
+        plt.savefig((out_file + '_OpeningPrices.png'), format='png', dpi=300, transparent=False, bbox_inches='tight', pad_inches=0.03)
+    else:
+        plt.savefig("opening_prices.png", format='png', dpi=300, transparent=False, bbox_inches='tight', pad_inches=0.03)
 
 
 def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime, endTime, title=None, out_file="liquidity_telemetry.png"):
@@ -244,6 +250,7 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
         print("Low Accuracy")
 
     # Calculate Cross-Correlation
+    print("Calculating Root Mean Square Error...")
     cross_correlation = calculate_cross_correlation(simulated_percentages, real_percentages)
     print("Normalized Cross-Correlation Graph indicates:")
 
@@ -255,6 +262,7 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
         print("The simulated percentages have little similarity to the real percentages.")
 
     # Plot the cross-correlation
+    print("Plotting Cross Correlation...")
     lag = np.arange(-len(real_percentages) + 1, len(real_percentages))
     plt.figure(figsize=(8, 6))
     plt.plot(lag, cross_correlation, marker='o', linestyle='-')
@@ -267,10 +275,14 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
     plt.tight_layout()
 
     # Save the graph as a PNG file
-    plt.savefig("cross_correlation_graph.png")
+    #Check if user added filename
+    if (out_file != "liquidity_telemetry.png"):
+        plt.savefig((out_file + '_CrossCorrelation.png'))
+    else:
+        plt.savefig("cross_correlation_graph.png")
 
     # Show the graph
-    plt.show()
+    #plt.show()
     
 
 def make_plots1(plot_inputs, plot_params_dict, title=None, out_file="liquidity_telemetry.png"):
