@@ -236,15 +236,25 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
         return normalized_cross_corr
 
     
-    
     # Calculate Root Mean Square Error (RMSE)
     rmse = calculate_rmse(simulated_percentages, real_percentages)
     print(f"Root Mean Square Error (RMSE) is: {rmse:.2f} This indicates: ")
 
+    #Save RMSE result
+    with open('configs/RMSE.json', 'r+') as rmseFile:
+        storedRMSE = json.load(rmseFile)                   #Load json file
+        storedRMSE['rmse'] = rmse                #Save Root Mean Square
+        storedRMSE['rounded-rmse'] = round(rmse, 2)        #Save Root Mean Square as a 2-decimal digit
+        rmseFile.seek(0)                                   #Go to top of file
+        json.dump(storedRMSE, rmseFile, indent=4)          #Insert edits into file
+        rmseFile.truncate()                                #Delete whatever characters are left
+        rmseFile.close()                                   #Close file
+
+
     # Interpretation of results
     if rmse < 1.0:
         print("High Accuracy.")
-    elif 1.0 <= rmse < 5.0:
+    elif (rmse >= 1.0) and (rmse < 5.0): #1.0 <= rmse < 5.0:
         print("Reasonable Accuracy.")
     else:
         print("Low Accuracy")
