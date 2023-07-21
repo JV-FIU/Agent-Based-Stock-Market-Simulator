@@ -30,7 +30,7 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
         super().__init__()
         #Load window
         self.ui = loader.load("widgets/UI/RMSC03_Past.ui", None)
-        self.ui.setWindowTitle("Agent-Based Stock Market Simulator - Simulate Future")
+        self.ui.setWindowTitle("Agent-Based Stock Market Simulator - Compare Simulation data")
 
         #Set time to local time zone
         self.ui.startTime.setTimeSpec(QtCore.Qt.TimeSpec.LocalTime)
