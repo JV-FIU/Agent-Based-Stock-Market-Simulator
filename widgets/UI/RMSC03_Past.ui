@@ -54,7 +54,7 @@
 }
 
 /* QTabWidget customization */
-#result1, #result2, #result3, #result4 {
+#result1, #result2, #result3, #result4, #result5, #result6 {
 	color: #000000;
 	background: #000000;
 	background-color: #000000;
@@ -451,6 +451,48 @@ QTabWidget::pane {
       <property name="geometry">
        <rect>
         <x>0</x>
+        <y>0</y>
+        <width>961</width>
+        <height>351</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Simulation Results will appear here</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="result5">
+     <attribute name="title">
+      <string>Real-life Data</string>
+     </attribute>
+     <widget class="QLabel" name="realData">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>961</width>
+        <height>351</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Simulation Results will appear here</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="result6">
+     <attribute name="title">
+      <string>X-Correlation</string>
+     </attribute>
+     <widget class="QLabel" name="crossCorrelation">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
         <y>0</y>
         <width>961</width>
         <height>351</height>
