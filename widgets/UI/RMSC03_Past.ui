@@ -531,6 +531,32 @@ QTabWidget::pane {
      </item>
     </layout>
    </widget>
+   <widget class="QWidget" name="widget_2" native="true">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>370</y>
+      <width>251</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="labrl4">
+       <property name="text">
+        <string>Root Mean Square Error (RMSE):</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="RMSError">
+       <property name="text">
+        <string>0.00</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
  </widget>
  <resources/>
