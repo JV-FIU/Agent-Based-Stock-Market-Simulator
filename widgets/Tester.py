@@ -171,7 +171,10 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
                 
                 print("Simulation complete")
 
-                self.graphLiquidity()
+                #Graph data
+                self.graphLiquidity(selectedDate.date().toString('yyyyMMdd'),
+                                    startTime.time().toString("hh:mm:ss"),
+                                    endTime.time().toString("hh:mm:ss"))
             else:
                 print("End time not in the future relative to Start time")
         else:
@@ -179,7 +182,7 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
         
             
 
-    def graphLiquidity(self): #Graph data
+    def graphLiquidity(self, date, startTime, endTime): #Graph data
         global epoch_time
         global stockSym
         global alreadyGraphed
@@ -201,13 +204,22 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
         sys.argv.append(str(epoch_time) + "_" + stockSym + "_LiquidityGraph")         
         sys.argv.append("-c")
         sys.argv.append("configs/plot_configuration.json")
+        sys.argv.append("-s")
+        sys.argv.append(stockSym)
+        sys.argv.append("-d")
+        sys.argv.append(date)
+        sys.argv.append("-st")
+        sys.argv.append(startTime)
+        sys.argv.append("-et")
+        sys.argv.append(endTime)                       
+
                             
         args, config_args = parser.parse_known_args() 
         #config_file = args.config
 
         #Check if graphing program has been executed, else reload program
         if alreadyGraphed == False:
-            importlib.import_module('util.plotting.{}'.format('liquidity_telemetry_multi'), package=None)
+            importlib.import_module('util.plotting.{}'.format('LT_Market_Comparison'), package=None)
             alreadyGraphed = True
         else:
             importlib.reload(importlib.import_module('util.plotting.{}'.format('liquidity_telemetry_multi'), package=None))
