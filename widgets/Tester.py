@@ -255,8 +255,8 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
             self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
             self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)        
-            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_CrossCorrelation.png"), self.ui.realData)
-            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_OpeningPrices.png"), self.ui.crossCorrelation)
+            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_CrossCorrelation.png"), self.ui.crossCorrelation)
+            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_OpeningPrices.png"), self.ui.realData)
         else:
             #Insert arguments
             sys.argv.append("../../log/" + data + "/EXCHANGE_AGENT.bz2")  
@@ -290,8 +290,8 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             self.generateImage((data + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
             self.generateImage((data + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
             self.generateImage((data + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)
-            self.generateImage((data + "_LiquidityGraph_CrossCorrelation.png"), self.ui.realData)
-            self.generateImage((data + "_LiquidityGraph_OpeningPrices.png"), self.ui.crossCorrelation)
+            self.generateImage((data + "_LiquidityGraph_CrossCorrelation.png"), self.ui.crossCorrelation)
+            self.generateImage((data + "_LiquidityGraph_OpeningPrices.png"), self.ui.realData)
             
         #Get Root Mean Square Error
         with open('configs/RMSE.json', 'r') as rmseFile:
@@ -321,8 +321,10 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
     
     #NOTE: Might add an if statement that checks if its simulation was done within 30 from today
     #NOTE: Might also add an if statement that checks if a simulation run was done
+    #if (startTime.dateTime().toSecsSinceEpoch() < epoch_time) and (endTime.dateTime().toSecsSinceEpoch() < epoch_time):
     def fetchData(self):
         print("Fetching latest simulation data...")
+        epoch_time = int(time.time())
         
         #Get latest simulation configuration and set variables
         with open('util/plotting/configs/latest_simulation.json', 'r') as simFile:
@@ -362,10 +364,15 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             
             simFile.close()
 
-            #Graph data
-            self.graphLiquidity(self.ui.simDate.date().toString('yyyyMMdd'),
-                                self.ui.startTime.time().toString("hh:mm:ss"),
-                                self.ui.endTime.time().toString("hh:mm:ss"),
-                                dataName,
-                                ticker)
+            
+            #Check if the configuration times of the last simulation are in the past
+            if (self.ui.startTime.dateTime().toSecsSinceEpoch() < epoch_time) and (self.ui.endTime.dateTime().toSecsSinceEpoch() < epoch_time):
+                #Graph data
+                self.graphLiquidity(self.ui.simDate.date().toString('yyyyMMdd'),
+                                    self.ui.startTime.time().toString("hh:mm:ss"),
+                                    self.ui.endTime.time().toString("hh:mm:ss"),
+                                    dataName,
+                                    ticker)
+            else:
+                print("No real life stock data is available yet, please try again later.")
             
