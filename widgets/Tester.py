@@ -293,6 +293,14 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             self.generateImage((data + "_LiquidityGraph_CrossCorrelation.png"), self.ui.realData)
             self.generateImage((data + "_LiquidityGraph_OpeningPrices.png"), self.ui.crossCorrelation)
             
+        #Get Root Mean Square Error
+        with open('configs/RMSE.json', 'r') as rmseFile:
+            storedRMSE = json.load(rmseFile)                   #Load json file
+            #rmse = storedRMSE['rmse']                         #Get Root Mean Square Error
+            roundedRmse = storedRMSE['rounded-rmse']           #Get Rounded Root Mean Square error
+            self.ui.RMSError.setText(str(roundedRmse))         #Display RMSE result
+            rmseFile.close()                                   #Close file
+
         #Clean up
         sys.argv.clear()
         sys.argv.append(TemporaryStorage)
