@@ -83,7 +83,7 @@
         </item>
         <item>
          <property name="text">
-          <string>Test Prediction Accuracy with Past Date</string>
+          <string>Test Simulation Result Accuracy</string>
          </property>
         </item>
        </widget>
