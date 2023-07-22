@@ -192,7 +192,9 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
 
                     #Set ticker
                     simData['ticker'] = stockSym
-                
+
+                    #QUESTION: Would it be a good idea to store the seed used for the simulation?
+
                     simFile.seek(0)                                            #Go to top of file
                     json.dump(simData, simFile, indent=4)                      #Insert edits into file
                     simFile.truncate()                                         #Delete whatever characters are left
