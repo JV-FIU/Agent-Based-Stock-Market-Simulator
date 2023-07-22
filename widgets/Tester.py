@@ -188,6 +188,9 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
 
                     #Set data name
                     simData['dataName'] = (str(epoch_time) + "_" + str(self.ui.stockSymbol.text()))
+
+                    #Set ticker
+                    simData['ticker'] = stockSym
                 
                     simFile.seek(0)                                            #Go to top of file
                     json.dump(simData, simFile, indent=4)                      #Insert edits into file
@@ -286,12 +289,12 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
                 importlib.reload(importlib.import_module('util.plotting.{}'.format('LT_Market_Comparison'), package=None))
             
             #Generate graphs
-            self.generateImage((data + "_LiquidityGraph_Midprice.png"), self.ui.imageContainer_1)
-            self.generateImage((data + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
-            self.generateImage((data + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
-            self.generateImage((data + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)
-            self.generateImage((data + "_LiquidityGraph_CrossCorrelation.png"), self.ui.crossCorrelation)
-            self.generateImage((data + "_LiquidityGraph_OpeningPrices.png"), self.ui.realData)
+            self.generateImage2((data + "_LiquidityGraph_Midprice.png"), self.ui.imageContainer_1)
+            self.generateImage2((data + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
+            self.generateImage2((data + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
+            self.generateImage2((data + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)
+            self.generateImage2((data + "_LiquidityGraph_CrossCorrelation.png"), self.ui.crossCorrelation)
+            self.generateImage2((data + "_LiquidityGraph_OpeningPrices.png"), self.ui.realData)
             
         #Get Root Mean Square Error
         with open('configs/RMSE.json', 'r') as rmseFile:
@@ -310,13 +313,29 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
          
 
 
-    def generateImage(self, imageLocation, displayName):
+    #This method is fine, but for some reason the images of the hidden tabs are being displayed in a very low resolution
+    def generateImage(self, imageLocation, displayName): 
         
         #Delete Text
         displayName.setText("")
 
         #Display image 
         displayName.setPixmap(QPixmap(imageLocation).scaled(displayName.width(), displayName.height(), QtCore.Qt.KeepAspectRatio))
+        print("Display width:", str(displayName.width()), "; Display height:", str(displayName.height()))
+
+    #Temporary fix until the sizing bug is patched
+    def generateImage2(self, imageLocation, displayName):
+        
+        #Delete Text
+        displayName.setText("")
+
+        #Temporary size fix
+        w = self.ui.imageContainer_1.width()
+        h = self.ui.imageContainer_1.height()
+
+        #Display image 
+        displayName.setPixmap(QPixmap(imageLocation).scaled(w, h, QtCore.Qt.KeepAspectRatio))
+        #print("Display width:", str(displayName.width()), "; Display height:", str(displayName.height()))
 
     
     #NOTE: Might add an if statement that checks if its simulation was done within 30 from today
