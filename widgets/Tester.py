@@ -1,7 +1,7 @@
 #RMSC03-based accuracy program for Agent-based Stock Market Simulator
 #Created by: Jorge Valdes-Santiago
 #Date created:  July 16, 2023
-#Updated:       July 21, 2023
+#Updated:       July 23, 2023
 
 #IMPORTANT NOTE: All code related to finding content in directories are using the location of absms.py as reference
 
@@ -49,7 +49,11 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             QtCore.QDate.currentDate())
         global stockSym
         self.ui.stockSymbol.setText("NDAQ")
-        
+
+        #Set up display images
+        self.setUpImage(self.ui.imageContainer_1, "widgets/UI/image2.jpeg")
+        self.setUpImage(self.ui.realData, "widgets/UI/image3.jpeg")
+
         #Set default values to global variables
         global alreadyRun
         alreadyRun = False
@@ -225,6 +229,8 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
         os.chdir('.\\util\\plotting')
         parser = argparse.ArgumentParser(description='CLI utility for inspecting liquidity issues and transacted volumes')
 
+        #print("New Directory: ", os.getcwd())
+
         if (data or tickerSym) is None: #NOTE: Must keep an eye on this if statement
             #Insert arguments
             sys.argv.append("../../log/" + (str(epoch_time) + "_" + stockSym) + "/EXCHANGE_AGENT.bz2")  
@@ -254,12 +260,12 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
                 importlib.reload(importlib.import_module('util.plotting.{}'.format('LT_Market_Comparison'), package=None))
             
             #Generate graphs
-            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Midprice.png"), self.ui.imageContainer_1)
-            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
-            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
-            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)        
-            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_CrossCorrelation.png"), self.ui.crossCorrelation)
-            self.generateImage((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_OpeningPrices.png"), self.ui.realData)
+            self.generateImage2((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Midprice.png"), self.ui.imageContainer_1)
+            self.generateImage2((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_Spread.png"), self.ui.imageContainer_2)
+            self.generateImage2((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_R.png"), self.ui.imageContainer_3)
+            self.generateImage2((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_TV.png"), self.ui.imageContainer_4)        
+            self.generateImage2((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_CrossCorrelation.png"), self.ui.crossCorrelation)
+            self.generateImage2((str(epoch_time) + "_" + stockSym + "_LiquidityGraph_OpeningPrices.png"), self.ui.realData)
         else:
             #Insert arguments
             sys.argv.append("../../log/" + data + "/EXCHANGE_AGENT.bz2")  
@@ -321,7 +327,7 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
 
         #Display image 
         displayName.setPixmap(QPixmap(imageLocation).scaled(displayName.width(), displayName.height(), QtCore.Qt.KeepAspectRatio))
-        print("Display width:", str(displayName.width()), "; Display height:", str(displayName.height()))
+        #print("Display width:", str(displayName.width()), "; Display height:", str(displayName.height()))
 
     #Temporary fix until the sizing bug is patched
     def generateImage2(self, imageLocation, displayName):
@@ -336,7 +342,6 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
         #Display image 
         displayName.setPixmap(QPixmap(imageLocation).scaled(w, h, QtCore.Qt.KeepAspectRatio))
         #print("Display width:", str(displayName.width()), "; Display height:", str(displayName.height()))
-
     
     #NOTE: Might add an if statement that checks if its simulation was done within 30 from today
     #NOTE: Might also add an if statement that checks if a simulation run was done
@@ -394,4 +399,11 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
                                     ticker)
             else:
                 print("No real life stock data is available yet, please try again later.")
+
+    #Set defaul image on startup
+    def setUpImage(self, display, imageLocation):
+        #Temporary size fix
+        w = self.ui.imageContainer_1.width()
+        h = self.ui.imageContainer_1.height()
+        display.setPixmap(QPixmap(imageLocation).scaled(w, h, QtCore.Qt.KeepAspectRatio))
             
