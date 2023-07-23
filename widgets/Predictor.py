@@ -1,7 +1,7 @@
 #RMSC03-based predicting program for Agent-based Stock Market Simulator
 #Created by: Jorge Valdes-Santiago
 #Date created:  July 16, 2023
-#Updated:       July 21, 2023
+#Updated:       July 23, 2023
 
 #IMPORTANT NOTE: All code related to finding content in directories are using the location of absms.py as reference
 
@@ -50,6 +50,9 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         global stockSym
         self.ui.stockSymbol.setText("NDAQ")
 
+        #Place picture
+        self.setUpImage(self.ui.imageContainer_1, "widgets/UI/image2.jpeg")
+        
         #Connect methods to events
         self.ui.pushButton.clicked.connect(self.simulate)
         
@@ -297,3 +300,11 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         #Display image 
         displayName.setPixmap(QPixmap(imageLocation).scaled(w, h, QtCore.Qt.KeepAspectRatio))
         #print("Display width:", str(displayName.width()), "; Display height:", str(displayName.height()))
+
+    #Set defaul image at startup
+    def setUpImage(self, display, imageLocation):
+        #Temporary size fix
+        w = self.ui.imageContainer_1.width()
+        h = self.ui.imageContainer_1.height()
+        display.setPixmap(QPixmap(imageLocation).scaled(w, h, QtCore.Qt.KeepAspectRatio))
+            
