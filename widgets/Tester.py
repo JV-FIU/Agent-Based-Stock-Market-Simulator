@@ -51,8 +51,8 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
         self.ui.stockSymbol.setText("NDAQ")
 
         #Set up display images
-        self.setUpImage(self.ui.imageContainer_1, "widgets/UI/image2.jpeg")
-        self.setUpImage(self.ui.realData, "widgets/UI/image3.jpeg")
+        self.setUpImage(self.ui.imageContainer_1, "widgets/UI/Image2.jpeg")
+        self.setUpImage(self.ui.realData, "widgets/UI/Image3.jpeg")
 
         #Set default values to global variables
         global alreadyRun
