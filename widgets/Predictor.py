@@ -51,8 +51,8 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
         self.ui.stockSymbol.setText("NDAQ")
 
         #Place picture
-        self.setUpImage(self.ui.imageContainer_1, "widgets/UI/image2.jpeg")
-        
+        self.setUpImage(self.ui.imageContainer_1, "widgets/UI/Image2.jpeg")
+
         #Connect methods to events
         self.ui.pushButton.clicked.connect(self.simulate)
         
