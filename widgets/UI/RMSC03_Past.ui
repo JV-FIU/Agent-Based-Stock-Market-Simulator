@@ -60,7 +60,7 @@ QStatusBar {
 }
 
 /* QTabWidget customization */
-#result1, #result2, #result3, #result4, #result1_4, #result2_4 {
+#result1, #result2, #result3, #result4, #result1_4, #result2_4, #result3_4 {
 	color: #000000;
 	background: #000000;
 	background-color: #000000;
@@ -677,7 +677,7 @@ QTabWidget::pane {
            <attribute name="title">
             <string>Stock Market Price</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_20">
+           <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
              <widget class="QLabel" name="realData">
               <property name="sizePolicy">
@@ -737,7 +737,7 @@ QTabWidget::pane {
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0">
+        <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0,0,0">
          <item>
           <widget class="QLabel" name="labrl4">
            <property name="text">
@@ -750,6 +750,23 @@ QTabWidget::pane {
          </item>
          <item>
           <widget class="QLabel" name="RMSError">
+           <property name="text">
+            <string>0.00</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Cross Correlation at T-0: </string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="xCorrelationTZero">
            <property name="text">
             <string>0.00</string>
            </property>
