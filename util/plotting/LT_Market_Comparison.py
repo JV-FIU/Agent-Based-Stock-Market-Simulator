@@ -277,8 +277,8 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
 
     # Calculate Cross-Correlation
     print("Calculating Root Mean Square Error...")
-    print("Array 1", str(simulated))
-    print("Array 2", str(real))
+    #print("Array 1", str(simulated))
+    #print("Array 2", str(real))
     cross_correlation = calculate_cross_correlation(simulated, real)
     print("Normalized Cross-Correlation Graph indicates:")
 
