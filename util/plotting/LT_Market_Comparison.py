@@ -227,7 +227,7 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
         normalized_cross_corr = cross_corr / np.max(np.abs(cross_corr))
         return normalized_cross_corr
     
-    # Calculate Root Mean Square Error (RMSE)
+    # Calculate Root Mean Square Error (RMSE) and Cross correlation
     rmse = calculate_rmse(simulated, real)
     c = np.corrcoef(np.array(real), y=np.array(simulated)) 
     print(c)
@@ -238,10 +238,12 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
         storedRMSE = json.load(rmseFile)                   #Load json file
         storedRMSE['rmse'] = rmse                          #Save Root Mean Square
         storedRMSE['rounded-rmse'] = round(rmse, 2)        #Save Root Mean Square as a 2-decimal digit
+        storedRMSE['x-corr'] = str(c)                           #Store cross correlation at T-0
         rmseFile.seek(0)                                   #Go to top of file
         json.dump(storedRMSE, rmseFile, indent=4)          #Insert edits into file
         rmseFile.truncate()                                #Delete whatever characters are left
         rmseFile.close()                                   #Close file
+        #Should I add cross correlation at T-zero here?
 
 
     # Interpretation of results
