@@ -6,6 +6,9 @@
 # - 5000  Noise Agents
 # - 1     (Optional) POV Execution agent
 
+#Original script by: David Byrd, Danial Dervovic, Mahmoud Mahfouz, and Jiachuan Bi
+#Modified by Jorge Valdes-Santiago
+
 import argparse
 import numpy as np
 import pandas as pd
@@ -69,6 +72,7 @@ parser.add_argument('-v',
 parser.add_argument('--config_help',
                     action='store_true',
                     help='Print argument options for this config file')
+
 # Execution agent config
 parser.add_argument('-e',
                     '--execution-agents',
@@ -79,6 +83,7 @@ parser.add_argument('-p',
                     type=float,
                     default=0.1,
                     help='Participation of Volume level for execution agent')
+
 # market maker config
 parser.add_argument('--mm-pov',
                     type=float,
@@ -121,6 +126,25 @@ parser.add_argument('--fund-vol',
                     default=1e-8,
                     help='Volatility of fundamental time series.'
                     )
+
+#Agent number configuration
+parser.add_argument('-va',
+                    '--value-agents',
+                    type=int,
+                    default=100,
+                    help='Change the number of value agents')
+
+parser.add_argument('-me',
+                    '--momentum-agents',
+                    type=int,
+                    default=25,
+                    help='Change the number of momentum agents')
+
+parser.add_argument('-na',
+                    '--noise-agents',
+                    type=int,
+                    default=5000,
+                    help='Change the number of noise agents')
 
 args, remaining_args = parser.parse_known_args()
 
@@ -173,6 +197,7 @@ symbols = {symbol: {'r_bar': r_bar,
 
 oracle = SparseMeanRevertingOracle(mkt_open, mkt_close, symbols)
 
+
 # 1) Exchange Agent
 
 #  How many orders in the past to store for transacted volume computation
@@ -196,7 +221,7 @@ agent_types.extend("ExchangeAgent")
 agent_count += 1
 
 # 2) Noise Agents
-num_noise = 5000
+num_noise = args.noise_agents
 noise_mkt_open = historical_date + pd.to_timedelta("09:00:00")  # These times needed for distribution of arrival times
                                                                 # of Noise Agents
 noise_mkt_close = historical_date + pd.to_timedelta("16:00:00")
@@ -212,8 +237,9 @@ agents.extend([NoiseAgent(id=j,
 agent_count += num_noise
 agent_types.extend(['NoiseAgent'])
 
+
 # 3) Value Agents
-num_value = 100
+num_value = args.value_agents
 agents.extend([ValueAgent(id=j,
                           name="Value Agent {}".format(j),
                           type="ValueAgent",
@@ -228,6 +254,7 @@ agents.extend([ValueAgent(id=j,
                for j in range(agent_count, agent_count + num_value)])
 agent_count += num_value
 agent_types.extend(['ValueAgent'])
+
 
 # 4) Market Maker Agents
 
@@ -272,7 +299,7 @@ agent_types.extend('POVMarketMakerAgent')
 
 
 # 5) Momentum Agents
-num_momentum_agents = 25
+num_momentum_agents = args.momentum_agents
 
 agents.extend([MomentumAgent(id=j,
                              name="MOMENTUM_AGENT_{}".format(j),
@@ -288,6 +315,7 @@ agents.extend([MomentumAgent(id=j,
                for j in range(agent_count, agent_count + num_momentum_agents)])
 agent_count += num_momentum_agents
 agent_types.extend("MomentumAgent")
+
 
 # 6) Execution Agent
 
