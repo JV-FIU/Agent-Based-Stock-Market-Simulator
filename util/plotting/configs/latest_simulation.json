@@ -8,8 +8,8 @@
     "end-minute": 0,
     "dataName": "NaN",
     "ticker": "NDAQ",
-    "value-agents": 50,
-    "momentum-agents": 10,
-    "noise-agents": 2000,
+    "value-agents": 100,
+    "momentum-agents": 25,
+    "noise-agents": 5000,
     "seed": 0
 }
