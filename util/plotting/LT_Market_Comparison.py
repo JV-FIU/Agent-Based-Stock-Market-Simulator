@@ -209,6 +209,8 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
             current_value = array[i]
             percentage_changes.append(current_value)
 
+        print("Array type:", type(array)) 
+        print("percentage_changes type: 0", type(percentage_changes))
         return percentage_changes
 
     # Calculate percent change for each data point (original function)
@@ -229,9 +231,9 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
             percentage_changes.append(percentage_change)
 
         return percentage_changes
-
-    simulated = calculate_percentage_change(simulated_data)
-    real = calculate_percentage_change(real_data)
+    
+    simulated = simulated_data  #calculate_percentage_change(simulated_data)
+    real = real_data            #calculate_percentage_change(real_data)
 
     from scipy.signal import correlate
     def calculate_rmse(simulated_data, real_data):
@@ -249,7 +251,7 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
     # Calculate Root Mean Square Error (RMSE) and Cross correlation
     rmse = calculate_rmse(simulated, real)
     c = np.corrcoef(np.array(real), y=np.array(simulated)) 
-    print(c)
+    print(c[0,1])
     print(f"Root Mean Square Error (RMSE) is: {rmse:.2f} This indicates: ")
 
     #Save RMSE result
@@ -257,7 +259,7 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
         storedRMSE = json.load(rmseFile)                   #Load json file
         storedRMSE['rmse'] = rmse                          #Save Root Mean Square
         storedRMSE['rounded-rmse'] = round(rmse, 2)        #Save Root Mean Square as a 2-decimal digit
-        storedRMSE['x-corr'] = str(c)                           #Store cross correlation at T-0
+        storedRMSE['x-corr'] = str(c[0,1])                           #Store cross correlation at T-0
         rmseFile.seek(0)                                   #Go to top of file
         json.dump(storedRMSE, rmseFile, indent=4)          #Insert edits into file
         rmseFile.truncate()                                #Delete whatever characters are left
