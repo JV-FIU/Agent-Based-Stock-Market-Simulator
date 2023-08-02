@@ -182,7 +182,7 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
     import yfinance as yf
 
     # Simulated Values
-    simulated_data = plot_inputs['mid_price'].resample('10T').first()
+    simulated_data = plot_inputs['mid_price'].resample('1T').first()
 
     # Real Values
     date1 = plot_inputs['mid_price'].index[0].date()
@@ -198,7 +198,7 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
 
     data = yf.download(tickers=ticker1, start=xmin, end=xmax, interval="1m")
 
-    real_data = data['Open'].resample('10Min').first()
+    real_data = data['Open'].resample('1Min').first()
     
     # Comparison
     # Calculate percent change for each data point
@@ -243,8 +243,8 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
         rmse = math.sqrt(((real_data - simulated_data) ** 2).sum()/real_data.shape[0])
         return rmse
 
-    def calculate_cross_correlation(simulated_data, real_data):
-        cross_corr = correlate(simulated_data, real_data, mode='full')
+    def calculate_cross_correlation(sim_data, r_data):
+        cross_corr = correlate(sim_data, r_data, mode='full')
         normalized_cross_corr = cross_corr / np.max(np.abs(cross_corr))
         return normalized_cross_corr
     
@@ -259,7 +259,7 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
         storedRMSE = json.load(rmseFile)                   #Load json file
         storedRMSE['rmse'] = rmse                          #Save Root Mean Square
         storedRMSE['rounded-rmse'] = round(rmse, 2)        #Save Root Mean Square as a 2-decimal digit
-        storedRMSE['x-corr'] = str(c[0,1])                           #Store cross correlation at T-0
+        storedRMSE['x-corr'] = str(c[0,1])                  #Store cross correlation at T-0
         rmseFile.seek(0)                                   #Go to top of file
         json.dump(storedRMSE, rmseFile, indent=4)          #Insert edits into file
         rmseFile.truncate()                                #Delete whatever characters are left
@@ -277,6 +277,8 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
 
     # Calculate Cross-Correlation
     print("Calculating Root Mean Square Error...")
+    print("Array 1", str(simulated))
+    print("Array 2", str(real))
     cross_correlation = calculate_cross_correlation(simulated, real)
     print("Normalized Cross-Correlation Graph indicates:")
 
