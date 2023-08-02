@@ -332,6 +332,10 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             #rmse = storedRMSE['rmse']                         #Get Root Mean Square Error
             roundedRmse = storedRMSE['rounded-rmse']           #Get Rounded Root Mean Square error
             self.ui.RMSError.setText(str(roundedRmse))         #Display RMSE result
+            
+            #Get cross correlation at t-0
+            xcorr = storedRMSE['x-corr']
+            self.ui.xCorrelationTZero.setText(xcorr)
             rmseFile.close()                                   #Close file
 
         #Clean up
