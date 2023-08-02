@@ -7,7 +7,7 @@
 # - 1     (Optional) POV Execution agent
 
 #Original script by: David Byrd, Danial Dervovic, Mahmoud Mahfouz, and Jiachuan Bi
-#Modified by Jorge Valdes-Santiago
+#Modified by Jorge Valdes-Santiago and Duniel Mendez
 
 import argparse
 import numpy as np
