@@ -20,6 +20,7 @@ from Kernel import Kernel
 from util import util
 from util.order import LimitOrder
 from util.oracle.SparseMeanRevertingOracle import SparseMeanRevertingOracle
+import yfinance as yf
 
 from agent.ExchangeAgent import ExchangeAgent
 from agent.NoiseAgent import NoiseAgent
@@ -179,8 +180,11 @@ agent_count, agents, agent_types = 0, [], []
 # Hyperparameters
 symbol = args.ticker
 starting_cash = 10000000  # Cash in this simulator is always in CENTS.
+yFinanceSymbol = yf.Ticker(symbol)
+data = yFinanceSymbol.history()
+open_funds = data[data.index == str(historical_date.date())]["Open"].values[0]
 
-r_bar = 1e5
+r_bar = open_funds * 100 #Changing mid-price
 sigma_n = r_bar / 10
 kappa = 1.67e-15
 lambda_a = 7e-11
