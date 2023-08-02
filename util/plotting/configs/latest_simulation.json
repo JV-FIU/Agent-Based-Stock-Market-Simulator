@@ -7,5 +7,9 @@
     "end-hour": 4,
     "end-minute": 0,
     "dataName": "NaN",
-    "ticker": "NDAQ"
+    "ticker": "NDAQ",
+    "value-agents": 50,
+    "momentum-agents": 10,
+    "noise-agents": 2000,
+    "seed": 0
 }
