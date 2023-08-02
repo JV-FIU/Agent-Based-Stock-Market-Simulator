@@ -1,5 +1,6 @@
 #Original script by: David Byrd, Danial Dervovic, Mahmoud Mahfouz, and Jiachuan Bi
 #Modified by Ronald Garcia and Jorge Valdes-Santiago
+import math
 import pandas as pd
 import sys
 import os
@@ -181,7 +182,7 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
     import yfinance as yf
 
     # Simulated Values
-    simulated_data = plot_inputs['mid_price'].resample('10T').first()
+    simulated_data = plot_inputs['mid_price'].resample('1T').first()
 
     # Real Values
     date1 = plot_inputs['mid_price'].index[0].date()
@@ -197,7 +198,7 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
 
     data = yf.download(tickers=ticker1, start=xmin, end=xmax, interval="1m")
 
-    real_data = data['Open'].resample('10Min').first()
+    real_data = data['Open'].resample('1Min').first()
     
     # Comparison
     # Calculate percent change for each data point
@@ -226,18 +227,17 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
     def calculate_rmse(simulated_data, real_data):
         simulated_data = np.array(simulated_data)
         real_data = np.array(real_data)
-        mse = np.mean((simulated_data - real_data) ** 2)
-        rmse = np.sqrt(mse)
+
+        rmse = math.sqrt(((real_data - simulated_data) ** 2).sum()/real_data.shape[0])
         return rmse
 
     def calculate_cross_correlation(simulated_data, real_data):
         cross_corr = correlate(simulated_data, real_data, mode='full')
         normalized_cross_corr = cross_corr / np.max(np.abs(cross_corr))
         return normalized_cross_corr
-
     
     # Calculate Root Mean Square Error (RMSE)
-    rmse = calculate_rmse(simulated_percentages, real_percentages)
+    rmse = calculate_rmse(simulated_data, real_data)
     print(f"Root Mean Square Error (RMSE) is: {rmse:.2f} This indicates: ")
 
     #Save RMSE result
