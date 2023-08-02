@@ -11,6 +11,6 @@
     "value-agents": 100,
     "momentum-agents": 25,
     "noise-agents": 5000,
-    "starting-price": 1000,
+    "starting-price": 1000.0,
     "seed": 0
 }
