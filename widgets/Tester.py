@@ -1,7 +1,7 @@
 #RMSC03-based accuracy program for Agent-based Stock Market Simulator
 #Created by: Jorge Valdes-Santiago
 #Date created:  July 16, 2023
-#Updated:       August 1, 2023
+#Updated:       August 2, 2023
 
 #IMPORTANT NOTE: All code related to finding content in directories are using the location of absms.py as reference
 
@@ -49,6 +49,9 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             QtCore.QDate.currentDate())
         global stockSym
         self.ui.stockSymbol.setText("NDAQ")
+
+        #Set default starting midprice
+        self.ui.startingPrice.setValue(round(1000.00, 2))
 
         #Set up display images
         self.setUpImage(self.ui.imageContainer_1, "widgets/UI/Image2.jpeg")
@@ -105,6 +108,7 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
                 print("Selected Date:   ", selectedDate.date().toString("yyyy / MM / dd"))
                 print("Start Time:      ", startTime.time().toString("hh:mm:ss"))
                 print("End Time:        ", endTime.time().toString("hh:mm:ss"))
+                print("Starting price:  ", str(round(self.ui.startingPrice.value(), 2)))
                 #os.chdir('../')
 
                 #Set up seed
@@ -144,6 +148,8 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
                 sys.argv.append(str(self.ui.momentumAgents.value()))        #Insert number of momentum agents
                 sys.argv.append("--noise-agents")
                 sys.argv.append(str(self.ui.noiseAgents.value()))           #Insert number of noise agents
+                sys.argv.append("--start-midprice")                     
+                sys.argv.append(str(round(self.ui.startingPrice.value())))         #Insert starting midprice
                 
                 #print("New length of sys.argv is ", len(sys.argv))
                 args, config_args = parser.parse_known_args() 
@@ -207,6 +213,9 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
                     simData['value-agents'] = self.ui.valueAgents.value()       #Set number of value agents
                     simData['momentum-agents'] = self.ui.momentumAgents.value() #Set number of momentum agents
                     simData['noise-agents'] = self.ui.noiseAgents.value()       #Set number of noise agents
+
+                    #Store starting price
+                    simData['starting-price'] = round(self.ui.startingPrice.value(), 2)
 
                     #Store seed
                     simData['seed'] = seed
@@ -392,6 +401,9 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             momenAgents = simData['momentum-agents']
             noiseAgents = simData['noise-agents']
 
+            #Get latest simulation's starting mid-price
+            startPrice = simData['starting-price']
+
             #Get last simulation's random seed
             storedSeed = simData['seed']
 
@@ -412,6 +424,8 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             self.ui.valueAgents.setValue(valueAgents)   #Set number of value agents
             self.ui.momentumAgents.setValue(momenAgents)#Set number of momentum agents
             self.ui.noiseAgents.setValue(noiseAgents)   #Set number of noise agents
+
+            self.ui.startingPrice.setValue(startPrice)  #Set starting midprice
 
             #self.ui.seedSelector.setValue(storedSeed)   #FIXME: OverflowError. QSpinBox cannot go beyond 2,147,483,647 for some reason. My target value is 2^32
             
