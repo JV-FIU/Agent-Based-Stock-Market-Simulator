@@ -1,7 +1,7 @@
 #RMSC03-based predicting program for Agent-based Stock Market Simulator
 #Created by: Jorge Valdes-Santiago
 #Date created:  July 16, 2023
-#Updated:       August 1, 2023
+#Updated:       August 2, 2023
 
 #IMPORTANT NOTE: All code related to finding content in directories are using the location of absms.py as reference
 
@@ -49,6 +49,9 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
             QtCore.QDate.currentDate())
         global stockSym
         self.ui.stockSymbol.setText("NDAQ")
+
+        #Set up default starting price
+        self.ui.startingPrice.setValue(1000.00)
 
         #Place picture
         self.setUpImage(self.ui.imageContainer_1, "widgets/UI/Image2.jpeg")
@@ -102,6 +105,7 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
                 print("Selected Date:   ", selectedDate.date().toString("yyyy / MM / dd"))
                 print("Start Time:      ", startTime.time().toString("hh:mm:ss"))
                 print("End Time:        ", endTime.time().toString("hh:mm:ss"))
+                print("Starting price:  ", str(self.ui.startingPrice.value()))
                 #os.chdir('../')
 
                 #Set up seed
@@ -144,6 +148,8 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
                 sys.argv.append(str(self.ui.momentumAgents.value()))        #Insert number of momentum agents
                 sys.argv.append("--noise-agents")
                 sys.argv.append(str(self.ui.noiseAgents.value()))           #Insert number of noise agents
+                sys.argv.append("--start-midprice")                     
+                sys.argv.append(str(self.ui.startingPrice.value()))         #Insert starting midprice
 
                 #print("New length of sys.argv is ", len(sys.argv))
                 args, config_args = parser.parse_known_args() 
@@ -208,6 +214,9 @@ class RMSC03Predictor(QtCore.QObject): #An object wrapping around the ui
                     simData['value-agents'] = self.ui.valueAgents.value()       #Set number of value agents
                     simData['momentum-agents'] = self.ui.momentumAgents.value() #Set number of momentum agents
                     simData['noise-agents'] = self.ui.noiseAgents.value()       #Set number of noise agents
+
+                    #Store starting midprice
+                    simData['starting-price'] = self.ui.startingPrice.value()
 
                     #Store Seed
                     simData['seed'] = seed
