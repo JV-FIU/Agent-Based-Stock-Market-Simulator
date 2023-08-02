@@ -41,7 +41,7 @@ QStatusBar {
 }
 
 
-#stockSymbol, #endTime, #startTime, #simDate, #seedSelector, #noiseAgents, #valueAgents, #momentumAgents {
+#stockSymbol, #endTime, #startTime, #simDate, #seedSelector, #noiseAgents, #valueAgents, #momentumAgents, #startingPrice {
     background-color: white;
     border-style: outset;
     border-width: 2px;
@@ -274,6 +274,43 @@ QTabWidget::pane {
           </item>
          </layout>
         </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_8">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Starting Mid-price ($)</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="startingPrice">
+           <property name="prefix">
+            <string/>
+           </property>
+           <property name="maximum">
+            <double>99999999999.990005493164063</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <spacer name="verticalSpacer_7">
