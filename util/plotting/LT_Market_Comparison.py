@@ -205,9 +205,18 @@ def comparison(plot_inputs, plot_params_dict, ob_path, ticker, date1, startTime,
     def calculate_percentage_change(array):
         percentage_changes = []
 
-        for i in range(0, len(array)):
+        for i in range(1, len(array)):
+            previous_value = array[i - 1]
             current_value = array[i]
-            percentage_changes.append(current_value)
+
+            # Calculate percentage change
+            if previous_value != 0:
+                percentage_change = ((current_value - previous_value) / previous_value) * 100
+            else:
+                # If previous_value is 0, we avoid division by zero and consider the change as infinite (or undefined)
+                percentage_change = float('inf')
+
+            percentage_changes.append(percentage_change)
 
         return percentage_changes
 
