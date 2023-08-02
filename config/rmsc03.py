@@ -147,6 +147,12 @@ parser.add_argument('-na',
                     default=5000,
                     help='Change the number of noise agents')
 
+parser.add_argument('-sm',
+                    '--start-midprice',
+                    type=float,
+                    default=1000.00,
+                    help='Set the starting mid-price')
+
 args, remaining_args = parser.parse_known_args()
 
 if args.config_help:
@@ -180,11 +186,22 @@ agent_count, agents, agent_types = 0, [], []
 # Hyperparameters
 symbol = args.ticker
 starting_cash = 10000000  # Cash in this simulator is always in CENTS.
+
+
+#FIXME: Block Temporarily commented until error caused by simulations that take place in the future is fixed
+'''
+#Get latest ticker data
 yFinanceSymbol = yf.Ticker(symbol)
 data = yFinanceSymbol.history()
 open_funds = data[data.index == str(historical_date.date())]["Open"].values[0]
 
 r_bar = open_funds * 100 #Changing mid-price
+'''
+
+#Get starting midprice
+open_funds = args.start_midprice
+
+r_bar = int((float(open_funds) * float(100.0))) #Convert to cents
 sigma_n = r_bar / 10
 kappa = 1.67e-15
 lambda_a = 7e-11
