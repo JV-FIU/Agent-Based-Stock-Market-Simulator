@@ -1,7 +1,7 @@
 #RMSC03-based accuracy program for Agent-based Stock Market Simulator
 #Created by: Jorge Valdes-Santiago
 #Date created:  July 16, 2023
-#Updated:       July 23, 2023
+#Updated:       August 1, 2023
 
 #IMPORTANT NOTE: All code related to finding content in directories are using the location of absms.py as reference
 
@@ -125,19 +125,26 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
                 #Add arguments since most of the scripts are CMD-based
                 #print("Length of sys.argv is ", len(sys.argv))
                 sys.argv.append("-c")
-                sys.argv.append("rmsc03")
+                sys.argv.append("rmsc03")                                   #Select configuration file
                 sys.argv.append("-t")
-                sys.argv.append(self.ui.stockSymbol.text())
+                sys.argv.append(self.ui.stockSymbol.text())                 #Insert ticker
                 sys.argv.append("-d")
-                sys.argv.append(selectedDate.date().toString('yyyyMMdd'))
-                sys.argv.append("-s")
-                sys.argv.append(str(seed))
+                sys.argv.append(selectedDate.date().toString('yyyyMMdd'))   #Insert selected date
+                sys.argv.append("-s")                                       
+                sys.argv.append(str(seed))                                  #Insert seed
                 sys.argv.append("-l")
-                sys.argv.append((str(epoch_time) + "_" + str(self.ui.stockSymbol.text())))   
+                sys.argv.append((str(epoch_time) + "_" + str(self.ui.stockSymbol.text())))                                   #Insert file name for data
                 sys.argv.append("--start-time")
-                sys.argv.append(startTime.time().toString("hh:mm:ss"))
+                sys.argv.append(startTime.time().toString("hh:mm:ss"))      #Insert starting time
                 sys.argv.append("--end-time")
-                sys.argv.append(endTime.time().toString("hh:mm:ss"))
+                sys.argv.append(endTime.time().toString("hh:mm:ss"))        #Insert end time
+                sys.argv.append("--value-agents")                           
+                sys.argv.append(str(self.ui.valueAgents.value()))           #Insert number of value agents
+                sys.argv.append("--momentum-agents")
+                sys.argv.append(str(self.ui.momentumAgents.value()))        #Insert number of momentum agents
+                sys.argv.append("--noise-agents")
+                sys.argv.append(str(self.ui.noiseAgents.value()))           #Insert number of noise agents
+                
                 #print("New length of sys.argv is ", len(sys.argv))
                 args, config_args = parser.parse_known_args() 
                 config_file = args.config
@@ -195,6 +202,14 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
 
                     #Set ticker
                     simData['ticker'] = stockSym
+
+                    #Set agent simulation variables
+                    simData['value-agents'] = self.ui.valueAgents.value()       #Set number of value agents
+                    simData['momentum-agents'] = self.ui.momentumAgents.value() #Set number of momentum agents
+                    simData['noise-agents'] = self.ui.noiseAgents.value()       #Set number of noise agents
+
+                    #Store seed
+                    simData['seed'] = seed
                 
                     simFile.seek(0)                                            #Go to top of file
                     json.dump(simData, simFile, indent=4)                      #Insert edits into file
@@ -372,6 +387,14 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
             #Get Ticker
             ticker = simData['ticker']
 
+            #Get agent configurations
+            valueAgents = simData['value-agents']
+            momenAgents = simData['momentum-agents']
+            noiseAgents = simData['noise-agents']
+
+            #Get last simulation's random seed
+            storedSeed = simData['seed']
+
             #Set variables
             self.ui.startTime.setDate(
                QtCore.QDate(year, month, day))          #Set simulation date to start time
@@ -385,6 +408,12 @@ class RMSC03Tester(QtCore.QObject): #An object wrapping around the ui
                QtCore.QDate(year, month, day))          #Set simulation date
             
             self.ui.stockSymbol.setText(ticker)         #Set ticker
+
+            self.ui.valueAgents.setValue(valueAgents)   #Set number of value agents
+            self.ui.momentumAgents.setValue(momenAgents)#Set number of momentum agents
+            self.ui.noiseAgents.setValue(noiseAgents)   #Set number of noise agents
+
+            #self.ui.seedSelector.setValue(storedSeed)   #FIXME: OverflowError. QSpinBox cannot go beyond 2,147,483,647 for some reason. My target value is 2^32
             
             simFile.close()
 
