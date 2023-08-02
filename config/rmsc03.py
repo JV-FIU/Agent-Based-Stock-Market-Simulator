@@ -187,17 +187,6 @@ agent_count, agents, agent_types = 0, [], []
 symbol = args.ticker
 starting_cash = 10000000  # Cash in this simulator is always in CENTS.
 
-
-#FIXME: Block Temporarily commented until error caused by simulations that take place in the future is fixed
-'''
-#Get latest ticker data
-yFinanceSymbol = yf.Ticker(symbol)
-data = yFinanceSymbol.history()
-open_funds = data[data.index == str(historical_date.date())]["Open"].values[0]
-
-r_bar = open_funds * 100 #Changing mid-price
-'''
-
 #Get starting midprice
 open_funds = args.start_midprice
 
