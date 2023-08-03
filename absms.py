@@ -47,19 +47,19 @@ class AbidesMain(QtCore.QObject):
         self.mainWindow.show()
 
         #Load credits
-        #self.mainWindow.actionCredits.triggered.connect(self.about) #<-- I don't understand this error
-        #FIXME:QIODevice::read (QFile, "..\widgets\UI\Credits.ui"): device not open Designer: 
-        # An error has occurred while reading the UI file at line 1, column 0: 
-        # Premature end of document.
+        #self.mainWindow.actionCredits.triggered.connect(self.about)
+        #FIXME: I don't understand this error
+        # QIODevice::read (QFile, "..\widgets\UI\Credits.ui"): device not open Designer: 
+        # An error has occurred while reading the UI file at line 1, column 0: Premature end of document.
         # RuntimeError: Unable to open/read ui device
 
 
 
     #Load credits
     def about(self):
-        aboutUI = loader.load("../widgets/UI/Credits.ui", None)
-        aboutUI.show()
-        aboutUI.close()
+        aboutUI = loader.load("/widgets/UI/Credits.ui", None)
+        self.aboutUI = aboutUI
+        self.aboutUI.show()
 
 
 #Main program
