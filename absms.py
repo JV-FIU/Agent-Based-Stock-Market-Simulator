@@ -1,7 +1,7 @@
 #ABIDES Agent-based Stock Market Simulator main file
 #Created by: Jorge Valdes-Santiago
 #Date created: June 26, 2023
-#Modified: July 21, 2023
+#Modified: August 2, 2023
 
 from PySide6 import QtWidgets
 from PySide6.QtUiTools import QUiLoader
@@ -43,8 +43,23 @@ class AbidesMain(QtCore.QObject):
                 print("Please select an option")
 
         #Launch main window
-        self.mainWindow.launchButton.clicked.connect(selectConfiguration)
+        self.mainWindow.launchButton.clicked.connect(selectConfiguration) 
         self.mainWindow.show()
+
+        #Load credits
+        #self.mainWindow.actionCredits.triggered.connect(self.about) #<-- I don't understand this error
+        #FIXME:QIODevice::read (QFile, "..\widgets\UI\Credits.ui"): device not open Designer: 
+        # An error has occurred while reading the UI file at line 1, column 0: 
+        # Premature end of document.
+        # RuntimeError: Unable to open/read ui device
+
+
+
+    #Load credits
+    def about(self):
+        aboutUI = loader.load("../widgets/UI/Credits.ui", None)
+        aboutUI.show()
+        aboutUI.close()
 
 
 #Main program
